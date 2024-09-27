@@ -1,0 +1,62 @@
+html, body, #root, .section {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.section {
+  padding: 20px; /* Ajuster le padding selon les besoins */
+}
+
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.react-grid-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box {
+  background: #00d1b2;
+  border: 2px solid #00b89c;
+  border-radius: 5px;
+  padding: 10px;
+  box-sizing: border-box;
+  color: white;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  text-align: center;
+  overflow: hidden;
+  max-width: 100%;
+  max-height: 100%;
+  white-space: nowrap;
+}
+
+.drag-handle {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  cursor: move;
+  font-size: 1.2rem;
+}
+
+.delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  color: #ff3860;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  color: #ff1f4c;
+}/*# sourceMappingURL=GridLayout.css.map */
