@@ -2,8 +2,16 @@
   display: flex;
   justify-content: flex-end;
   position: relative;
-  z-index: 1000 !important; // Pour que le menu apparaisse au-dessus de la grille
+  z-index: 1000 !important;
+    
 }
 :root {
   --bulma-radius: 10px;
+}
+button.dropdown-item   {
+  border-radius: 0px;
+}
+
+.dropdown-content {
+  padding: 5px;
 }

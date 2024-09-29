@@ -1,9 +1,19 @@
-import { useState, type FC } from "react";
+// Header.tsx
+import { useState, useEffect, useRef, type FC } from "react";
 import "bulma/css/bulma.min.css";
 import "./Header.scss";
 
-const Header: FC = () => {
+// Importation des différents menus
+import MenuGlobal from "./MenuGlobal/MenuGlobal";
+import MenuAddGrid from "./MenuAddGrid/MenuAddGrid";
+
+interface HeaderProps {
+	addItem: () => void;
+}
+
+const Header: FC<HeaderProps> = ({ addItem }) => {
 	const [menuIsActive, setMenuIsActive] = useState<boolean>(false);
+	const [currentMenu, setCurrentMenu] = useState<string>("MenuGlobal");
 
 	// Exemple d'utilisateur connecté
 	const user = {
@@ -11,42 +21,81 @@ const Header: FC = () => {
 		isAdmin: true,
 	};
 
+	// Ref to the dropdown
+	const dropdownRef = useRef<HTMLDivElement>(null);
+
+	// Fermer le menu en cliquant en dehors
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				menuIsActive &&
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setMenuIsActive(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [menuIsActive]);
+
+	// Choisir quel menu afficher
+	const renderMenuContent = () => {
+		switch (currentMenu) {
+			case "MenuGlobal":
+				return <MenuGlobal user={user} setCurrentMenu={setCurrentMenu} />;
+			case "MenuAddGrid":
+				return (
+					<MenuAddGrid
+						user={user}
+						addItem={addItem}
+						setCurrentMenu={setCurrentMenu}
+					/>
+				);
+			// Ajoutez d'autres menus ici selon vos besoins
+			default:
+				return <MenuGlobal user={user} setCurrentMenu={setCurrentMenu} />;
+		}
+	};
+
 	return (
 		<div className="header">
 			{/* Bouton burger */}
-			<div className={`dropdown is-right ${menuIsActive ? "is-active" : ""}`}>
+			<div
+				className={`dropdown is-right ${menuIsActive ? "is-active" : ""}`}
+				ref={dropdownRef}
+			>
 				<div className="dropdown-trigger">
 					<button
 						type="button"
-						className="button"
+						className="button is-white"
 						aria-haspopup="true"
 						aria-controls="dropdown-menu"
 						onClick={() => setMenuIsActive(!menuIsActive)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								setMenuIsActive(!menuIsActive);
+							}
+						}}
 					>
 						<span className="icon is-small">
-							<i className="fas fa-bars" aria-hidden="true"></i>
+							<i className="fas fa-bars" />
 						</span>
 					</button>
 				</div>
 
-				{/* Menu */}
-				<div className="dropdown-menu" id="dropdown-menu" role="menu">
-					<div className="dropdown-content">
-						<a href="#" className="dropdown-item">
-							Home
-						</a>
-						{user.isAdmin && (
-							<a href="#" className="dropdown-item">
-								Administration
-							</a>
-						)}
-						<a href="#" className="dropdown-item">
-							Settings
-						</a>
-						<hr className="dropdown-divider" />
-						<a href="#" className="dropdown-item">
-							Logout
-						</a>
+				{/* Menu Dropdown Dynamique */}
+				<div className="dropdown-menu" id="dropdown-menu">
+					<div
+						className="dropdown-content"
+						// Empêche la fermeture du menu lors des clics internes
+						// onClick={(e) => e.stopPropagation()} // Non nécessaire avec handleClickOutside basé sur ref
+					>
+						{renderMenuContent()}
 					</div>
 				</div>
 			</div>
