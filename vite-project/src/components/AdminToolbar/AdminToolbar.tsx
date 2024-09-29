@@ -1,19 +1,28 @@
-import React, { useState } from "react";
+import { useState, type FC } from "react";
 
-interface AdminToolbarProps {
-	onChangeBackground: (background: string) => void;
+interface BackgroundSettings {
+	imageUrl?: string;
+	color?: string;
+	opacity?: number;
 }
 
-const AdminToolbar: React.FC<AdminToolbarProps> = ({ onChangeBackground }) => {
+interface AdminToolbarProps {
+	onChangeBackground: (background: BackgroundSettings) => void;
+}
+
+const AdminToolbar: FC<AdminToolbarProps> = ({ onChangeBackground }) => {
 	const [color, setColor] = useState("");
 	const [imageUrl, setImageUrl] = useState("");
+	const [opacity, setOpacity] = useState<number>(0.5);
 
 	const handleApply = () => {
-		if (imageUrl) {
-			onChangeBackground(`url(${imageUrl})`);
-		} else if (color) {
-			onChangeBackground(color);
-		}
+		const backgroundSettings: BackgroundSettings = {
+			imageUrl: imageUrl || undefined,
+			color: color || undefined,
+			opacity: opacity,
+		};
+
+		onChangeBackground(backgroundSettings);
 	};
 
 	return (
@@ -34,6 +43,18 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ onChangeBackground }) => {
 					value={imageUrl}
 					onChange={(e) => setImageUrl(e.target.value)}
 				/>
+			</div>
+			<div>
+				<label>Opacité :</label>
+				<input
+					type="range"
+					min="0"
+					max="1"
+					step="0.01"
+					value={opacity}
+					onChange={(e) => setOpacity(parseFloat(e.target.value))}
+				/>
+				<span>{opacity}</span>
 			</div>
 			<button onClick={handleApply}>Appliquer</button>
 		</div>

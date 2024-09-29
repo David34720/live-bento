@@ -1,11 +1,13 @@
 html, body, #root, .section {
+  width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
+  text-align: center;
 }
 
-.section {
-  padding: 20px; /* Ajuster le padding selon les besoins */
+#root {
+  scrollbar-gutter: stable;
 }
 
 .layout {

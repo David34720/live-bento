@@ -1,0 +1,9 @@
+.header {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 1000 !important; // Pour que le menu apparaisse au-dessus de la grille
+}
+:root {
+  --bulma-radius: 10px;
+}
