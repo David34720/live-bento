@@ -2,31 +2,27 @@
 import { useState, useEffect, useRef, type FC } from "react";
 import "bulma/css/bulma.min.css";
 import "./Header.scss";
-
+import type { BackgroundSettings } from "../../@types";
 // Importation des différents menus
 import MenuGlobal from "./MenuGlobal/MenuGlobal";
 import MenuAddGrid from "./MenuAddGrid/MenuAddGrid";
 import MenuHomePageSettings from "./MenuHomePageSettings/MenuHomePageSettings";
-interface BackgroundSettings {
-	imageUrl?: string;
-	color?: string;
-	opacity?: number;
-}
 
 interface HeaderProps {
 	addItem: () => void;
 	onChangeBackground: (background: BackgroundSettings) => void;
+	isAdmin: boolean;
+	setIsAdmin: (setIsAdmin: boolean) => void;
 }
 
-const Header: FC<HeaderProps> = ({ addItem, onChangeBackground }) => {
+const Header: FC<HeaderProps> = ({
+	addItem,
+	onChangeBackground,
+	isAdmin,
+	setIsAdmin,
+}) => {
 	const [menuIsActive, setMenuIsActive] = useState<boolean>(false);
 	const [currentMenu, setCurrentMenu] = useState<string>("MenuGlobal");
-
-	// Exemple d'utilisateur connecté
-	const user = {
-		name: "John Doe",
-		isAdmin: true,
-	};
 
 	// Ref to the dropdown
 	const dropdownRef = useRef<HTMLDivElement>(null);
@@ -54,11 +50,11 @@ const Header: FC<HeaderProps> = ({ addItem, onChangeBackground }) => {
 	const renderMenuContent = () => {
 		switch (currentMenu) {
 			case "MenuGlobal":
-				return <MenuGlobal user={user} setCurrentMenu={setCurrentMenu} />;
+				return <MenuGlobal isAdmin={isAdmin} setCurrentMenu={setCurrentMenu} />;
 			case "MenuAddGrid":
 				return (
 					<MenuAddGrid
-						user={user}
+						isAdmin={isAdmin}
 						addItem={addItem}
 						setCurrentMenu={setCurrentMenu}
 					/>
@@ -66,19 +62,26 @@ const Header: FC<HeaderProps> = ({ addItem, onChangeBackground }) => {
 			case "MenuHomePageSettings":
 				return (
 					<MenuHomePageSettings
-						user={user}
+						isAdmin={isAdmin}
 						setCurrentMenu={setCurrentMenu}
 						onChangeBackground={onChangeBackground}
 					/>
 				);
 			// Ajoutez d'autres menus ici selon vos besoins
 			default:
-				return <MenuGlobal user={user} setCurrentMenu={setCurrentMenu} />;
+				return <MenuGlobal isAdmin={isAdmin} setCurrentMenu={setCurrentMenu} />;
 		}
 	};
 
 	return (
 		<div className="header">
+			<button
+				type="button"
+				className="isadmin-toggle mr-4"
+				onClick={() => setIsAdmin(!isAdmin)}
+			>
+				{isAdmin ? <span>Admin</span> : <span>Utilisateur</span>}
+			</button>
 			{/* Bouton burger */}
 			<div
 				className={`dropdown is-right ${menuIsActive ? "is-active" : ""}`}

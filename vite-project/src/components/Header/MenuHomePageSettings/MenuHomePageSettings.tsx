@@ -1,10 +1,7 @@
 import { useState, type FC } from "react";
 
 interface MenuHomePageSettingsProps {
-	user: {
-		name: string;
-		isAdmin: boolean;
-	};
+	isAdmin: boolean;
 	setCurrentMenu: (menu: string) => void;
 	onChangeBackground: (background: BackgroundSettings) => void;
 }
@@ -15,7 +12,7 @@ interface BackgroundSettings {
 }
 
 const MenuHomePageSettings: FC<MenuHomePageSettingsProps> = ({
-	user,
+	isAdmin,
 	setCurrentMenu,
 	onChangeBackground,
 }) => {
@@ -35,7 +32,7 @@ const MenuHomePageSettings: FC<MenuHomePageSettingsProps> = ({
 
 	return (
 		<>
-			{user.isAdmin && (
+			{isAdmin && (
 				<div>
 					<i className="fas fa-cog fa-2x" />
 					<h2>Configuration de la page</h2>

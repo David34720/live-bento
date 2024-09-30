@@ -3,13 +3,13 @@
   justify-content: flex-end;
   position: relative;
   z-index: 1000 !important;
-    
+  padding: 10px;
 }
 :root {
   --bulma-radius: 10px;
 }
 button.dropdown-item   {
-  border-radius: 0px;
+  border-radius: 5px;
 }
 
 .dropdown-content {
@@ -34,4 +34,7 @@ button.dropdown-item   {
 .dropdown-content {
   padding: 10px;
   width: 300px;
+}
+button.dropdown-item {
+    padding: 0.5rem;
 }

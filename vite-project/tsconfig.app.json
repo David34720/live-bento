@@ -21,10 +21,11 @@
 		"noFallthroughCasesInSwitch": true
 	},
 	"include": [
+		"src",
 		"src/**/*",
 		"src/**/*.ts",
 		"src/**/*.tsx",
-		"src/types/**/*.d.ts",
-		"src/types/*.d.ts"
+		"src/@types/**/*.d.ts",
+		"src/@types/*.d.ts"
 	]
 }

@@ -1,23 +1,31 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // App.tsx
-import { useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import GridLayout from "./components/GridLayout/GridLayout";
 import Header from "./components/Header/Header";
-import AdminToolbar from "./components/AdminToolbar/AdminToolbar";
+import type { BackgroundSettings } from "./@types";
 import "./App.scss";
-import { Responsive, WidthProvider, type Layouts } from "react-grid-layout";
+import type { Layouts } from "react-grid-layout";
 import "react-grid-layout/css/styles.css"; // Styles par défaut de react-grid-layout
 import "react-resizable/css/styles.css"; // Styles pour le redimensionnement
 import "bulma/css/bulma.min.css"; // Styles de Bulma
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
-
-interface BackgroundSettings {
-	imageUrl?: string;
-	color?: string;
-	opacity?: number;
-}
-
 function App() {
+	const [isAdmin, setIsAdmin] = useState<boolean>(false);
+	// Exemple d'utilisateur connecté
+	const user = {
+		name: "John Doe",
+		isAdmin: true,
+	};
+
+	const isAdminConnect = useCallback(async () => {
+		setIsAdmin(user.isAdmin);
+	}, []);
+
+	useEffect(() => {
+		isAdminConnect();
+	}, [isAdminConnect]);
+
 	const [backgroundSettings, setBackgroundSettings] =
 		useState<BackgroundSettings>({});
 
@@ -113,7 +121,12 @@ function App() {
 				} as CSSProperties
 			}
 		>
-			<Header addItem={addItem} onChangeBackground={onChangeBackground} />
+			<Header
+				addItem={addItem}
+				onChangeBackground={onChangeBackground}
+				isAdmin={isAdmin}
+				setIsAdmin={setIsAdmin}
+			/>
 			<div className="main-content">
 				<GridLayout
 					layouts={layouts}

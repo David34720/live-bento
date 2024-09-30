@@ -2,16 +2,13 @@
 import { type FC } from "react";
 
 interface MenuAddGridProps {
-	user: {
-		name: string;
-		isAdmin: boolean;
-	};
+	isAdmin: boolean;
 	setCurrentMenu: (menu: string) => void;
 	addItem: () => void;
 }
 
 const MenuAddGrid: FC<MenuAddGridProps> = ({
-	user,
+	isAdmin,
 	setCurrentMenu,
 	addItem,
 }) => {

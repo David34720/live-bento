@@ -1,5 +1,5 @@
 // GridLayout.tsx
-import { type FC } from "react";
+import type { FC } from "react";
 import { Responsive, WidthProvider, type Layouts } from "react-grid-layout";
 import "react-grid-layout/css/styles.css"; // Styles par défaut de react-grid-layout
 import "react-resizable/css/styles.css"; // Styles pour le redimensionnement
