@@ -52,7 +52,10 @@ const MenuAddGrid: FC<MenuAddGridProps> = ({
 					setCurrentMenu("MenuGlobal"); // Retourne au menu global sans fermer le dropdown
 				}}
 			>
-				Retour au Menu Global
+				<span className="icon">
+					<i className="fas fa-arrow-left" />
+				</span>
+				<span>Retour au Menu Global</span>
 			</button>
 		</div>
 	);

@@ -1,5 +1,5 @@
 // MenuGlobal.tsx
-import { type FC } from "react";
+import type { FC } from "react";
 
 interface MenuGlobalProps {
 	user: {
@@ -32,15 +32,28 @@ const MenuGlobal: FC<MenuGlobalProps> = ({ user, setCurrentMenu }) => {
 			)}
 
 			{/* Lien Paramètres */}
-			<button type="button" className="dropdown-item">
-				Paramètres
+			<button
+				type="button"
+				className="dropdown-item"
+				onClick={(e) => {
+					e.preventDefault();
+					setCurrentMenu("MenuHomePageSettings"); // Change le menu sans fermer le dropdown
+				}}
+			>
+				<span className="icon">
+					<i className="fas fa-cog" />
+				</span>
+				<span>Paramètres</span>
 			</button>
 
 			<hr className="dropdown-divider" />
 
 			{/* Lien Déconnexion */}
 			<button type="button" className="dropdown-item">
-				Déconnexion
+				<span className="icon">
+					<i className="fas fa-sign-out-alt" />
+				</span>
+				<span>Déconnexion</span>
 			</button>
 		</div>
 	);

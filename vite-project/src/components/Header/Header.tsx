@@ -6,12 +6,19 @@ import "./Header.scss";
 // Importation des différents menus
 import MenuGlobal from "./MenuGlobal/MenuGlobal";
 import MenuAddGrid from "./MenuAddGrid/MenuAddGrid";
+import MenuHomePageSettings from "./MenuHomePageSettings/MenuHomePageSettings";
+interface BackgroundSettings {
+	imageUrl?: string;
+	color?: string;
+	opacity?: number;
+}
 
 interface HeaderProps {
 	addItem: () => void;
+	onChangeBackground: (background: BackgroundSettings) => void;
 }
 
-const Header: FC<HeaderProps> = ({ addItem }) => {
+const Header: FC<HeaderProps> = ({ addItem, onChangeBackground }) => {
 	const [menuIsActive, setMenuIsActive] = useState<boolean>(false);
 	const [currentMenu, setCurrentMenu] = useState<string>("MenuGlobal");
 
@@ -54,6 +61,14 @@ const Header: FC<HeaderProps> = ({ addItem }) => {
 						user={user}
 						addItem={addItem}
 						setCurrentMenu={setCurrentMenu}
+					/>
+				);
+			case "MenuHomePageSettings":
+				return (
+					<MenuHomePageSettings
+						user={user}
+						setCurrentMenu={setCurrentMenu}
+						onChangeBackground={onChangeBackground}
 					/>
 				);
 			// Ajoutez d'autres menus ici selon vos besoins

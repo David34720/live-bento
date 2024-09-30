@@ -21,7 +21,7 @@ function App() {
 	const [backgroundSettings, setBackgroundSettings] =
 		useState<BackgroundSettings>({});
 
-	const handleBackgroundChange = (newBackground: BackgroundSettings) => {
+	const onChangeBackground = (newBackground: BackgroundSettings) => {
 		setBackgroundSettings(newBackground);
 	};
 
@@ -113,8 +113,7 @@ function App() {
 				} as CSSProperties
 			}
 		>
-			<AdminToolbar onChangeBackground={handleBackgroundChange} />
-			<Header addItem={addItem} />
+			<Header addItem={addItem} onChangeBackground={onChangeBackground} />
 			<div className="main-content">
 				<GridLayout
 					layouts={layouts}

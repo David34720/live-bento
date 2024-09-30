@@ -15,3 +15,23 @@ button.dropdown-item   {
 .dropdown-content {
   padding: 5px;
 }
+.nav-element {
+  margin: 10px 5px 1cqmin 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-element input {
+ width: 100px;
+}
+.nav-element input[type="color"] {
+  width: 30px;  
+  height: 30px; 
+  padding: 0;    
+  border: none; 
+  border-radius: 5px;
+}
+.dropdown-content {
+  padding: 10px;
+  width: 300px;
+}
