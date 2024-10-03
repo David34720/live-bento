@@ -1,5 +1,5 @@
 // MenuAddGrid.tsx
-import { type FC } from "react";
+import React, { type FC } from "react";
 
 interface MenuAddGridProps {
 	isAdmin: boolean;

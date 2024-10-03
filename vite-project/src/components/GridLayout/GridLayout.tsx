@@ -17,7 +17,7 @@ interface GridLayoutProps {
 	breakpoints: { [key: string]: number };
 	cols: { [key: string]: number };
 	rowHeight: number;
-	onBreakpointChange: (newBreakpoint: string) => void;
+	// onBreakpointChange: (newBreakpoint: string) => void;
 	draggableHandle: string;
 	compactType: "vertical" | "horizontal" | null;
 	preventCollision: boolean;
@@ -33,7 +33,6 @@ const GridLayout: FC<GridLayoutProps> = ({
 	breakpoints,
 	cols,
 	rowHeight,
-	onBreakpointChange,
 	draggableHandle,
 	compactType,
 	preventCollision,
@@ -50,7 +49,10 @@ const GridLayout: FC<GridLayoutProps> = ({
 			cols={cols}
 			rowHeight={rowHeight}
 			onLayoutChange={onLayoutChange}
-			onBreakpointChange={onBreakpointChange}
+			// onBreakpointChange={(newBreakpoint) => {
+			// 	// Mette à jour le currentBreakpoint lorsqu'un changement de breakpoint est détecté
+			// 	setCurrentBreakpoint(newBreakpoint);
+			// }}
 			draggableHandle={draggableHandle}
 			compactType={compactType}
 			preventCollision={preventCollision}

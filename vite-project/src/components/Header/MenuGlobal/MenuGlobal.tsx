@@ -1,14 +1,33 @@
 // MenuGlobal.tsx
 import type { FC } from "react";
+import ResponsiveToggle from "./ResponsiveToggle/ResponsiveToggle";
+import type { IVIsibleBreakPoints } from "../../../@types";
 
 interface MenuGlobalProps {
 	isAdmin: boolean;
 	setCurrentMenu: (menu: string) => void;
+	currentBreakpoint: string;
+	setSelectedBreakpoint: React.Dispatch<React.SetStateAction<string>>;
+	visibleBreakpoints: IVIsibleBreakPoints;
 }
 
-const MenuGlobal: FC<MenuGlobalProps> = ({ setCurrentMenu, isAdmin }) => {
+const MenuGlobal: FC<MenuGlobalProps> = ({
+	setCurrentMenu,
+	isAdmin,
+	currentBreakpoint,
+	setSelectedBreakpoint,
+	visibleBreakpoints,
+}) => {
 	return (
 		<div>
+			{/* Bouton pour toggle responsive */}
+			{isAdmin && (
+				<ResponsiveToggle
+					setCurrentBreakpoint={setSelectedBreakpoint}
+					visibleBreakpoints={visibleBreakpoints}
+					currentBreakpoint={currentBreakpoint}
+				/>
+			)}
 			{/* Bouton pour Naviguer vers MenuAddGrid */}
 			{isAdmin && (
 				<button
@@ -25,6 +44,7 @@ const MenuGlobal: FC<MenuGlobalProps> = ({ setCurrentMenu, isAdmin }) => {
 			{/* Lien Administratif, visible seulement si l'utilisateur est admin */}
 			{isAdmin && (
 				<button type="button" className="dropdown-item">
+					<i className="fas fa-cog mr-2" />
 					Admin
 				</button>
 			)}

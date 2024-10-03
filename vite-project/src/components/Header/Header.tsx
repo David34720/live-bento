@@ -1,18 +1,21 @@
 // Header.tsx
-import { useState, useEffect, useRef, type FC } from "react";
+import React, { useState, useEffect, useRef, type FC } from "react";
 import "bulma/css/bulma.min.css";
 import "./Header.scss";
-import type { BackgroundSettings } from "../../@types";
+import type { BackgroundSettings, IVIsibleBreakPoints } from "../../@types";
 // Importation des différents menus
 import MenuGlobal from "./MenuGlobal/MenuGlobal";
-import MenuAddGrid from "./MenuAddGrid/MenuAddGrid";
-import MenuHomePageSettings from "./MenuHomePageSettings/MenuHomePageSettings";
+import MenuAddGrid from "./MenuGlobal/MenuAddGrid/MenuAddGrid";
+import MenuHomePageSettings from "./MenuGlobal//MenuHomePageSettings/MenuHomePageSettings";
 
 interface HeaderProps {
 	addItem: () => void;
 	onChangeBackground: (background: BackgroundSettings) => void;
 	isAdmin: boolean;
-	setIsAdmin: (setIsAdmin: boolean) => void;
+	setIsAdmin: (isAdmin: boolean) => void;
+	currentBreakpoint: string;
+	setCurrentBreakpoint: React.Dispatch<React.SetStateAction<string>>;
+	visibleBreakpoints: IVIsibleBreakPoints;
 }
 
 const Header: FC<HeaderProps> = ({
@@ -20,6 +23,9 @@ const Header: FC<HeaderProps> = ({
 	onChangeBackground,
 	isAdmin,
 	setIsAdmin,
+	currentBreakpoint,
+	setCurrentBreakpoint,
+	visibleBreakpoints,
 }) => {
 	const [menuIsActive, setMenuIsActive] = useState<boolean>(false);
 	const [currentMenu, setCurrentMenu] = useState<string>("MenuGlobal");
@@ -50,7 +56,15 @@ const Header: FC<HeaderProps> = ({
 	const renderMenuContent = () => {
 		switch (currentMenu) {
 			case "MenuGlobal":
-				return <MenuGlobal isAdmin={isAdmin} setCurrentMenu={setCurrentMenu} />;
+				return (
+					<MenuGlobal
+						isAdmin={isAdmin}
+						setCurrentMenu={setCurrentMenu}
+						currentBreakpoint={currentBreakpoint}
+						setSelectedBreakpoint={setCurrentBreakpoint}
+						visibleBreakpoints={visibleBreakpoints}
+					/>
+				);
 			case "MenuAddGrid":
 				return (
 					<MenuAddGrid
@@ -69,7 +83,15 @@ const Header: FC<HeaderProps> = ({
 				);
 			// Ajoutez d'autres menus ici selon vos besoins
 			default:
-				return <MenuGlobal isAdmin={isAdmin} setCurrentMenu={setCurrentMenu} />;
+				return (
+					<MenuGlobal
+						isAdmin={isAdmin}
+						setCurrentMenu={setCurrentMenu}
+						currentBreakpoint={currentBreakpoint}
+						setSelectedBreakpoint={setCurrentBreakpoint}
+						breakpoints={breakpoints}
+					/>
+				);
 		}
 	};
 
@@ -108,13 +130,7 @@ const Header: FC<HeaderProps> = ({
 
 				{/* Menu Dropdown Dynamique */}
 				<div className="dropdown-menu" id="dropdown-menu">
-					<div
-						className="dropdown-content"
-						// Empêche la fermeture du menu lors des clics internes
-						// onClick={(e) => e.stopPropagation()} // Non nécessaire avec handleClickOutside basé sur ref
-					>
-						{renderMenuContent()}
-					</div>
+					<div className="dropdown-content">{renderMenuContent()}</div>
 				</div>
 			</div>
 		</div>

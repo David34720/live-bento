@@ -1,9 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 // App.tsx
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import React, {
+	useCallback,
+	useEffect,
+	useState,
+	useRef,
+	type CSSProperties,
+} from "react";
 import GridLayout from "./components/GridLayout/GridLayout";
 import Header from "./components/Header/Header";
-import type { BackgroundSettings } from "./@types";
+import type { BackgroundSettings, Breakpoints } from "./@types";
 import "./App.scss";
 import type { Layouts } from "react-grid-layout";
 import "react-grid-layout/css/styles.css"; // Styles par défaut de react-grid-layout
@@ -18,9 +23,10 @@ function App() {
 		isAdmin: true,
 	};
 
-	const isAdminConnect = useCallback(async () => {
+	// Utilisation correcte de useCallback avec les dépendances appropriées
+	const isAdminConnect = useCallback(() => {
 		setIsAdmin(user.isAdmin);
-	}, []);
+	}, [user.isAdmin]);
 
 	useEffect(() => {
 		isAdminConnect();
@@ -32,6 +38,61 @@ function App() {
 	const onChangeBackground = (newBackground: BackgroundSettings) => {
 		setBackgroundSettings(newBackground);
 	};
+
+	// Créer une référence pour le conteneur principal
+	const mainContentRef = useRef<HTMLDivElement>(null);
+
+	const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
+	const [breakpoints, setBreakpoints] = useState<Breakpoints>({
+		lg: 1200,
+		md: 996,
+		sm: 768,
+		xs: 480,
+		xxs: 0,
+	});
+	const [maxWidthBreakpoints, setMaxWidthBreakpoints] = useState<Breakpoints>({
+		lg: 1900,
+		md: 1119,
+		sm: 995,
+		xs: 767,
+		xxs: 479,
+	});
+
+	const [visibleBreakpoints, setVisibleBreakpoints] = useState<string[]>([]);
+
+	useEffect(() => {
+		const handleResize = () => {
+			const width = window.innerWidth;
+
+			if (width >= breakpoints.lg) {
+				setCurrentBreakpoint("lg");
+			} else if (width >= breakpoints.md) {
+				setCurrentBreakpoint("md");
+			} else if (width >= breakpoints.sm) {
+				setCurrentBreakpoint("sm");
+			} else if (width >= breakpoints.xs) {
+				setCurrentBreakpoint("xs");
+			} else {
+				setCurrentBreakpoint("xxs");
+			}
+
+			// Filtrer les breakpoints visibles en fonction de la taille de la fenêtre
+			const newVisibleBreakpoints = Object.entries(breakpoints)
+				.filter(([, breakpointWidth]) => breakpointWidth <= width)
+				.map(([key]) => key);
+
+			setVisibleBreakpoints(newVisibleBreakpoints);
+		};
+
+		// Écoute les changements de taille de la fenêtre
+		window.addEventListener("resize", handleResize);
+
+		// Exécute une fois pour ajuster le breakpoint et les boutons visibles à l'initialisation
+		handleResize();
+
+		// Nettoyage lors de la destruction du composant
+		return () => window.removeEventListener("resize", handleResize);
+	}, [breakpoints]);
 
 	// Définir les layouts initiaux
 	const initialLayouts: Layouts = {
@@ -62,10 +123,9 @@ function App() {
 		],
 	};
 
-	// États pour les layouts, le compteur d'éléments et le breakpoint actuel
+	// États pour les layouts et le compteur d'éléments
 	const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
 	const [counter, setCounter] = useState<number>(4); // Compteur pour les nouveaux éléments
-	const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
 
 	// Fonction appelée lorsque le layout change
 	const onLayoutChange = (
@@ -111,8 +171,11 @@ function App() {
 	return (
 		<div
 			className="app"
+			ref={mainContentRef}
 			style={
 				{
+					margin: "0 auto",
+
 					"--background-image": backgroundSettings.imageUrl
 						? `url(${backgroundSettings.imageUrl})`
 						: "none",
@@ -126,22 +189,32 @@ function App() {
 				onChangeBackground={onChangeBackground}
 				isAdmin={isAdmin}
 				setIsAdmin={setIsAdmin}
+				currentBreakpoint={currentBreakpoint}
+				setCurrentBreakpoint={setCurrentBreakpoint} // Utiliser setCurrentBreakpoint
+				visibleBreakpoints={visibleBreakpoints} // Passer changeSizeScreen comme prop
 			/>
 			<div className="main-content">
 				<GridLayout
 					layouts={layouts}
 					onLayoutChange={onLayoutChange}
-					breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+					breakpoints={breakpoints}
 					cols={{ lg: 12, md: 12, sm: 12, xs: 6, xxs: 4 }}
 					rowHeight={31}
-					onBreakpointChange={(newBreakpoint) =>
-						setCurrentBreakpoint(newBreakpoint)
-					}
+					// onBreakpointChange={(newBreakpoint) => {
+					// 	console.log(newBreakpoint);
+					// 	setCurrentBreakpoint(newBreakpoint);
+					// }}
+					setCurrentBreakpoint={setCurrentBreakpoint}
 					draggableHandle=".drag-handle"
 					compactType="vertical"
 					preventCollision={true}
 					autoSize={true}
-					style={{ height: "calc(100vh - 60px)" }}
+					style={{
+						height: "calc(100vh - 60px)",
+						maxWidth: `${maxWidthBreakpoints[currentBreakpoint]}px`,
+						margin: "0 auto",
+						transition: "max-width 0.3s ease",
+					}}
 					currentBreakpoint={currentBreakpoint}
 					removeItem={removeItem} // Pass removeItem as prop
 				/>

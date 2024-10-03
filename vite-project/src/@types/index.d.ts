@@ -5,3 +5,10 @@ export interface BackgroundSettings {
 	color?: string;
 	opacity?: number;
 }
+export interface Breakpoints {
+	[key: string]: number;
+}
+
+export interface IVIsibleBreakPoints {
+	breakpoint: string[];
+}
