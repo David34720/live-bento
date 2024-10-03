@@ -8,25 +8,56 @@ import React, {
 } from "react";
 import GridLayout from "./components/GridLayout/GridLayout";
 import Header from "./components/Header/Header";
-import type { BackgroundSettings, Breakpoints } from "./@types";
+import type {
+	BackgroundSettings,
+	Breakpoints,
+	Shop,
+	User,
+	LayoutsShop,
+} from "./@types";
 import "./App.scss";
 import type { Layouts } from "react-grid-layout";
 import "react-grid-layout/css/styles.css"; // Styles par défaut de react-grid-layout
 import "react-resizable/css/styles.css"; // Styles pour le redimensionnement
 import "bulma/css/bulma.min.css"; // Styles de Bulma
 
+import data from "./data";
+
 function App() {
+	// Initialiser les données user et shops
+	const [user, setUser] = useState<User>();
+	const [shops, setShops] = useState<Shop[]>([]);
+	const [currentShop, setCurrentShop] = useState<Shop>();
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	// Exemple d'utilisateur connecté
-	const user = {
-		name: "John Doe",
-		isAdmin: true,
-	};
+
+	useEffect(() => {
+		async function initData() {
+			const foundUser = data.user.find((u) => u.id === 1);
+			if (foundUser) {
+				setUser(foundUser);
+				console.log(foundUser);
+				const userShops = data.shops.filter(
+					(shop) => shop.userId === foundUser.id,
+				);
+				console.log(userShops);
+				if (userShops.length > 0) {
+					setShops(userShops as Shop[]);
+					setCurrentShop(userShops[0] as Shop | undefined);
+				}
+				console.log(currentShop);
+			}
+		}
+		initData();
+	}, []);
 
 	// Utilisation correcte de useCallback avec les dépendances appropriées
 	const isAdminConnect = useCallback(() => {
-		setIsAdmin(user.isAdmin);
-	}, [user.isAdmin]);
+		if (user) {
+			setIsAdmin(user.isAdmin);
+		} else {
+			setIsAdmin(false);
+		}
+	}, [user]);
 
 	useEffect(() => {
 		isAdminConnect();
@@ -43,20 +74,10 @@ function App() {
 	const mainContentRef = useRef<HTMLDivElement>(null);
 
 	const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
-	const [breakpoints, setBreakpoints] = useState<Breakpoints>({
-		lg: 1200,
-		md: 996,
-		sm: 768,
-		xs: 480,
-		xxs: 0,
-	});
-	const [maxWidthBreakpoints, setMaxWidthBreakpoints] = useState<Breakpoints>({
-		lg: 1900,
-		md: 1119,
-		sm: 995,
-		xs: 767,
-		xxs: 479,
-	});
+	const [breakpoints, setBreakpoints] = useState<Breakpoints>(data.breakpoints);
+	const [maxWidthBreakpoints, setMaxWidthBreakpoints] = useState<Breakpoints>(
+		data.maxWidthBreakpoints,
+	);
 
 	const [visibleBreakpoints, setVisibleBreakpoints] = useState<string[]>([]);
 
@@ -95,33 +116,7 @@ function App() {
 	}, [breakpoints]);
 
 	// Définir les layouts initiaux
-	const initialLayouts: Layouts = {
-		lg: [
-			{ i: "1", x: 0, y: 0, w: 4, h: 2 },
-			{ i: "2", x: 4, y: 0, w: 4, h: 2 },
-			{ i: "3", x: 8, y: 0, w: 4, h: 2 },
-		],
-		md: [
-			{ i: "1", x: 0, y: 0, w: 6, h: 2 },
-			{ i: "2", x: 6, y: 0, w: 6, h: 2 },
-			{ i: "3", x: 0, y: 2, w: 6, h: 2 },
-		],
-		sm: [
-			{ i: "1", x: 0, y: 0, w: 12, h: 2 },
-			{ i: "2", x: 0, y: 2, w: 12, h: 2 },
-			{ i: "3", x: 0, y: 4, w: 12, h: 2 },
-		],
-		xs: [
-			{ i: "1", x: 0, y: 0, w: 6, h: 2 },
-			{ i: "2", x: 0, y: 2, w: 6, h: 2 },
-			{ i: "3", x: 0, y: 4, w: 6, h: 2 },
-		],
-		xxs: [
-			{ i: "1", x: 0, y: 0, w: 4, h: 2 },
-			{ i: "2", x: 0, y: 2, w: 4, h: 2 },
-			{ i: "3", x: 0, y: 4, w: 4, h: 2 },
-		],
-	};
+	const initialLayouts: Layouts = currentShop?.layouts || {};
 
 	// États pour les layouts et le compteur d'éléments
 	const [layouts, setLayouts] = useState<Layouts>(initialLayouts);

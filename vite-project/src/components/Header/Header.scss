@@ -42,3 +42,7 @@ button.dropdown-item {
 .dropdown-menu {
   opacity: 0.92;
 }
+.rotate-90 {
+    transform: rotate(270deg);  /* Rotation de 90 degrés pour le mode paysage */
+    display: inline-block;     /* Assure que l'icône se comporte correctement avec la rotation */
+}
