@@ -8,7 +8,7 @@ export interface LayoutItem {
 	h: number; // Hauteur de l'élément
 }
 
-export interface LayoutsSHop {
+export interface LayoutsShop {
 	lg: LayoutItem[];
 	md: LayoutItem[];
 	sm: LayoutItem[];

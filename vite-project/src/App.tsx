@@ -28,6 +28,7 @@ function App() {
 	const [user, setUser] = useState<User>();
 	const [shops, setShops] = useState<Shop[]>([]);
 	const [currentShop, setCurrentShop] = useState<Shop>();
+	const [layouts, setLayouts] = useState<Layouts>({});
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -41,14 +42,15 @@ function App() {
 				);
 				console.log(userShops);
 				if (userShops.length > 0) {
-					setShops(userShops as Shop[]);
-					setCurrentShop(userShops[0] as Shop | undefined);
+					const firstShop = userShops[0] as Shop;
+					setCurrentShop(firstShop);
+					setLayouts(firstShop.layouts);
 				}
 				console.log(currentShop);
 			}
 		}
 		initData();
-	}, []);
+	}, [currentShop]);
 
 	// Utilisation correcte de useCallback avec les dépendances appropriées
 	const isAdminConnect = useCallback(() => {
@@ -116,11 +118,13 @@ function App() {
 	}, [breakpoints]);
 
 	// Définir les layouts initiaux
-	const initialLayouts: Layouts = currentShop?.layouts || {};
+	// const initialLayouts: Layouts = currentShop?.layouts || {};
 
 	// États pour les layouts et le compteur d'éléments
-	const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
-	const [counter, setCounter] = useState<number>(4); // Compteur pour les nouveaux éléments
+	// const [layouts, setLayouts] = useState<Layouts>(currentShop?.layouts || {});
+	const [counter, setCounter] = useState<number>(
+		Object.keys(currentShop?.layouts || {}).length,
+	); // Compteur pour les nouveaux éléments
 
 	// Fonction appelée lorsque le layout change
 	const onLayoutChange = (
@@ -186,7 +190,7 @@ function App() {
 				setIsAdmin={setIsAdmin}
 				currentBreakpoint={currentBreakpoint}
 				setCurrentBreakpoint={setCurrentBreakpoint} // Utiliser setCurrentBreakpoint
-				visibleBreakpoints={visibleBreakpoints} // Passer changeSizeScreen comme prop
+				visibleBreakpoints={visibleBreakpoints as LayoutsShop} // Passer changeSizeScreen comme prop
 			/>
 			<div className="main-content">
 				<GridLayout
@@ -199,10 +203,10 @@ function App() {
 					// 	console.log(newBreakpoint);
 					// 	setCurrentBreakpoint(newBreakpoint);
 					// }}
-					setCurrentBreakpoint={setCurrentBreakpoint}
+					// setCurrentBreakpoint={setCurrentBreakpoint }
 					draggableHandle=".drag-handle"
 					compactType="vertical"
-					preventCollision={true}
+					preventCollision={false}
 					autoSize={true}
 					style={{
 						height: "calc(100vh - 60px)",
