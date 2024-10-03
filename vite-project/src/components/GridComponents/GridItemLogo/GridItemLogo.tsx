@@ -11,7 +11,7 @@ const GridItemLogo = ({
 	currentBreakpoint: string;
 }) => {
 	if (!currentShop || !currentShop.layouts) {
-		console.log("currentShop or layouts is undefined");
+		console.log("currentShop or layouts is undefined", currentBreakpoint);
 		return null;
 	}
 
@@ -21,7 +21,7 @@ const GridItemLogo = ({
 	);
 
 	if (!layoutForItem) {
-		console.log(`Layout for item ${item.i} not found`);
+		console.log(`Layout for item ${item.i} not found   ${currentBreakpoint}`);
 		return null;
 	}
 

@@ -35,6 +35,7 @@ const chooseComponentToDisplay = (
 	currentShop: Shop,
 	currentBreakpoint: string,
 ) => {
+	console.log("currentBreakpoint", currentBreakpoint);
 	switch (item.i) {
 		case "logo":
 			// Retourner le composant avec les accolades
@@ -97,7 +98,7 @@ const GridLayout: FC<GridLayoutProps> = ({
 					className={`box  ${isAdmin ? "layout-item__admin" : "layout-item"}`}
 				>
 					{isAdmin && <div className="drag-handle"> ☰ </div>}
-					{chooseComponentToDisplay(item, currentShop)}{" "}
+					{chooseComponentToDisplay(item, currentShop, currentBreakpoint)}{" "}
 					{isAdmin && (
 						<button
 							type="button"

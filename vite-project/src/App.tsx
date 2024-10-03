@@ -49,11 +49,10 @@ function App() {
 					setLayouts(firstShop.layouts);
 					setCounter(Object.keys(firstShop.layouts).length - 1);
 				}
-				console.log("init shop", currentShop);
 			}
 		}
 		initData();
-	}, [currentShop]);
+	}, []); // Retirer `currentShop` des dépendances
 
 	// Utilisation correcte de useCallback avec les dépendances appropriées
 	const isAdminConnect = useCallback(() => {
@@ -79,6 +78,7 @@ function App() {
 	const mainContentRef = useRef<HTMLDivElement>(null);
 
 	const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
+
 	const [breakpoints, setBreakpoints] = useState<Breakpoints>(data.breakpoints);
 	const [maxWidthBreakpoints, setMaxWidthBreakpoints] = useState<Breakpoints>(
 		data.maxWidthBreakpoints,
@@ -166,22 +166,19 @@ function App() {
 			return newLayouts; // Retourner les layouts mis à jour
 		});
 	};
-
+	console.log("current brk", currentBreakpoint);
 	return (
 		<div
 			className="app"
 			ref={mainContentRef}
-			style={
-				{
-					margin: "0 auto",
-
-					"--background-image": backgroundSettings.imageUrl
-						? `url(${backgroundSettings.imageUrl})`
-						: "none",
-					"--background-color": backgroundSettings.color || "transparent",
-					"--background-opacity": backgroundSettings.opacity ?? 1,
-				} as CSSProperties
-			}
+			style={{
+				margin: "0 auto",
+				"--background-image": backgroundSettings.imageUrl
+					? `url(${backgroundSettings.imageUrl})`
+					: "none",
+				"--background-color": backgroundSettings.color || "transparent",
+				"--background-opacity": backgroundSettings.opacity ?? 1,
+			}}
 		>
 			<Header
 				addItem={addItem}
@@ -193,32 +190,30 @@ function App() {
 				visibleBreakpoints={visibleBreakpoints as LayoutsShop} // Passer changeSizeScreen comme prop
 			/>
 			<div className="main-content">
-				<GridLayout
-					layouts={layouts}
-					onLayoutChange={onLayoutChange}
-					breakpoints={breakpoints}
-					cols={{ lg: 12, md: 12, sm: 12, xs: 6, xxs: 4 }}
-					rowHeight={31}
-					// onBreakpointChange={(newBreakpoint) => {
-					// 	console.log(newBreakpoint);
-					// 	setCurrentBreakpoint(newBreakpoint);
-					// }}
-					// setCurrentBreakpoint={setCurrentBreakpoint }
-					draggableHandle=".drag-handle"
-					compactType="vertical"
-					preventCollision={false}
-					autoSize={true}
-					style={{
-						height: "calc(100vh - 60px)",
-						maxWidth: `${maxWidthBreakpoints[currentBreakpoint]}px`,
-						margin: "0 auto",
-						transition: "max-width 0.3s ease",
-					}}
-					currentBreakpoint={currentBreakpoint}
-					removeItem={removeItem}
-					currentShop={currentShop}
-					isAdmin={isAdmin}
-				/>
+				{/* Ajoute une condition de rendu pour vérifier currentShop et currentBreakpoint */}
+				{currentShop && currentBreakpoint && (
+					<GridLayout
+						layouts={layouts}
+						onLayoutChange={onLayoutChange}
+						breakpoints={breakpoints}
+						cols={{ lg: 12, md: 12, sm: 12, xs: 6, xxs: 4 }}
+						rowHeight={31}
+						draggableHandle=".drag-handle"
+						compactType="vertical"
+						preventCollision={false}
+						autoSize={true}
+						style={{
+							height: "calc(100vh - 60px)",
+							maxWidth: `${maxWidthBreakpoints[currentBreakpoint]}px`,
+							margin: "0 auto",
+							transition: "max-width 0.3s ease",
+						}}
+						currentBreakpoint={currentBreakpoint}
+						removeItem={removeItem}
+						currentShop={currentShop}
+						isAdmin={isAdmin}
+					/>
+				)}
 			</div>
 		</div>
 	);
