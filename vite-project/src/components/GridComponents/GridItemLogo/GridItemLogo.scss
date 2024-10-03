@@ -1,0 +1,30 @@
+.box {
+  background: rgba(255, 255, 255, 0);
+ 
+  
+}
+.drag-handle, .delete-button  {
+  color: #680000;
+}
+
+.layout-item, .layout-item__admin {
+  margin: 0;
+  padding: 0;
+}
+.layout-item {
+  background: rgba(255, 255, 255, 0);
+  border: 0px solid #ed000000;
+}
+.layout-item__admin {
+  background: rgba(0, 0, 0, 0.095);
+  border: 1px solid #680000;
+}
+.gridItemLogo {
+  background: rgba(255, 255, 255, 0);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  aspect-ratio: 1/1;
+  
+}

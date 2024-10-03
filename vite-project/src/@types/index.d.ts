@@ -2,6 +2,9 @@
 
 export interface LayoutItem {
 	i: string; // Identifiant unique pour chaque élément
+	bgColor?: string;
+	borderColor?: string;
+	borderSize?: number;
 	x: number; // Position X de l'élément dans la grille
 	y: number; // Position Y de l'élément dans la grille
 	w: number; // Largeur de l'élément
@@ -28,6 +31,7 @@ export interface Shop {
 	userId: number;
 	name: string;
 	layouts: Layouts;
+	logo?: string;
 }
 
 export interface Breakpoints {

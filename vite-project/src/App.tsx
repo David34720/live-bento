@@ -29,6 +29,7 @@ function App() {
 	const [shops, setShops] = useState<Shop[]>([]);
 	const [currentShop, setCurrentShop] = useState<Shop>();
 	const [layouts, setLayouts] = useState<Layouts>({});
+	const [counter, setCounter] = useState<number>(0); // Compteur pour les nouveaux éléments
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -40,13 +41,15 @@ function App() {
 				const userShops = data.shops.filter(
 					(shop) => shop.userId === foundUser.id,
 				);
+				setShops(userShops);
 				console.log(userShops);
 				if (userShops.length > 0) {
 					const firstShop = userShops[0] as Shop;
 					setCurrentShop(firstShop);
 					setLayouts(firstShop.layouts);
+					setCounter(Object.keys(firstShop.layouts).length - 1);
 				}
-				console.log(currentShop);
+				console.log("init shop", currentShop);
 			}
 		}
 		initData();
@@ -122,9 +125,6 @@ function App() {
 
 	// États pour les layouts et le compteur d'éléments
 	// const [layouts, setLayouts] = useState<Layouts>(currentShop?.layouts || {});
-	const [counter, setCounter] = useState<number>(
-		Object.keys(currentShop?.layouts || {}).length,
-	); // Compteur pour les nouveaux éléments
 
 	// Fonction appelée lorsque le layout change
 	const onLayoutChange = (
@@ -215,7 +215,9 @@ function App() {
 						transition: "max-width 0.3s ease",
 					}}
 					currentBreakpoint={currentBreakpoint}
-					removeItem={removeItem} // Pass removeItem as prop
+					removeItem={removeItem}
+					currentShop={currentShop}
+					isAdmin={isAdmin}
 				/>
 			</div>
 		</div>
