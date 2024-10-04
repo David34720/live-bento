@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import "bulma/css/bulma.min.css";
 import "./Header.scss";
-import type { BackgroundSettings, IVIsibleBreakPoints } from "../../@types";
+import type { BackgroundSettings } from "../../@types";
 
 interface HeaderProps {
 	addItem: () => void;
@@ -16,7 +16,7 @@ interface HeaderProps {
 	setIsAdmin: (isAdmin: boolean) => void;
 	currentBreakpoint: string;
 	setCurrentBreakpoint: React.Dispatch<React.SetStateAction<string>>;
-	visibleBreakpoints: IVIsibleBreakPoints;
+	visibleBreakpoints: string[];
 	menuIsActive: boolean;
 	setMenuIsActive: React.Dispatch<React.SetStateAction<boolean>>;
 	setCurrentMenu: (menu: string) => void;

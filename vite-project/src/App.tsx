@@ -14,7 +14,6 @@ import type {
 	Shop,
 	User,
 	LayoutsShop,
-	IVisibleBreakPoints,
 } from "./@types";
 import "./App.scss";
 import type { Layouts } from "react-grid-layout";
@@ -43,9 +42,7 @@ function App() {
 	const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
 	const [breakpoints] = useState<Breakpoints>(data.breakpoints);
 	const [maxWidthBreakpoints] = useState<Breakpoints>(data.maxWidthBreakpoints);
-	const [visibleBreakpoints, setVisibleBreakpoints] = useState<
-		IVisibleBreakPoints[]
-	>([]);
+	const [visibleBreakpoints, setVisibleBreakpoints] = useState<string[]>();
 
 	const [backgroundSettings, setBackgroundSettings] =
 		useState<BackgroundSettings>({});
@@ -137,7 +134,7 @@ function App() {
 						setCurrentMenu={setCurrentMenu}
 						currentBreakpoint={currentBreakpoint}
 						setSelectedBreakpoint={setCurrentBreakpoint}
-						visibleBreakpoints={visibleBreakpoints}
+						visibleBreakpoints={visibleBreakpoints ?? []}
 					/>
 				);
 			case "MenuAddGrid":
@@ -163,7 +160,7 @@ function App() {
 						setCurrentMenu={setCurrentMenu}
 						currentBreakpoint={currentBreakpoint}
 						setSelectedBreakpoint={setCurrentBreakpoint}
-						visibleBreakpoints={visibleBreakpoints}
+						visibleBreakpoints={visibleBreakpoints ?? []}
 					/>
 				);
 		}
@@ -171,9 +168,7 @@ function App() {
 		currentMenu,
 		isAdmin,
 		addItem,
-		setCurrentMenu,
 		currentBreakpoint,
-		setCurrentBreakpoint,
 		visibleBreakpoints,
 		onChangeBackground,
 	]);
@@ -243,9 +238,11 @@ function App() {
 				renderMenuContent={renderMenuContent}
 				menuIsActive={menuIsActive}
 				setMenuIsActive={setMenuIsActive}
+				setCurrentMenu={setCurrentMenu}
+				currentMenu={currentMenu}
 				currentBreakpoint={currentBreakpoint}
 				setCurrentBreakpoint={setCurrentBreakpoint} // Utiliser setCurrentBreakpoint
-				visibleBreakpoints={visibleBreakpoints as LayoutsShop} // Passer visibleBreakpoints comme prop
+				visibleBreakpoints={visibleBreakpoints ?? []} // Passer visibleBreakpoints comme prop
 			/>
 			<div className="main-content">
 				{/* Ajoute une condition de rendu pour vérifier currentShop et currentBreakpoint */}

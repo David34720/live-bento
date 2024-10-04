@@ -1,11 +1,11 @@
 // ResponsiveToggle.tsx
-import React, { type FC } from "react";
-import type { IVIsibleBreakPoints } from "../../../../@types";
+import type { FC, Dispatch } from "react";
+import type {} from "../../../../@types";
 
 interface ResponsiveToggleProps {
-	visibleBreakpoints: IVIsibleBreakPoints;
+	visibleBreakpoints: string[];
 	currentBreakpoint: string;
-	setCurrentBreakpoint: React.Dispatch<React.SetStateAction<string>>;
+	setCurrentBreakpoint: Dispatch<React.SetStateAction<string>>;
 }
 
 const ResponsiveToggle: FC<ResponsiveToggleProps> = ({

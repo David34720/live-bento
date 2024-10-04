@@ -1,14 +1,14 @@
 import React, { useCallback } from "react";
 import type { FC } from "react";
 import ResponsiveToggle from "./ResponsiveToggle/ResponsiveToggle";
-import type { IVIsibleBreakPoints } from "../../../@types";
+import type {} from "../../../@types";
 
 interface MenuGlobalProps {
 	isAdmin: boolean;
 	setCurrentMenu: (menu: string) => void;
 	currentBreakpoint: string;
 	setSelectedBreakpoint: React.Dispatch<React.SetStateAction<string>>;
-	visibleBreakpoints: IVIsibleBreakPoints;
+	visibleBreakpoints: string[];
 }
 
 const MenuGlobal: FC<MenuGlobalProps> = ({

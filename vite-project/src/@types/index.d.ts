@@ -38,6 +38,9 @@ export interface Breakpoints {
 	[key: string]: number; // Associe chaque clé de breakpoint à une valeur numérique (taille en pixels)
 }
 interface IVisibleBreakPoints {
+	map(
+		arg0: (key: any) => import("react/jsx-runtime").JSX.Element,
+	): import("react").ReactNode;
 	breakpoint: string;
 }
 export interface MaxWidthBreakpoints {
@@ -48,8 +51,4 @@ export interface BackgroundSettings {
 	imageUrl?: string;
 	color?: string;
 	opacity?: number;
-}
-
-export interface IVIsibleBreakPoints {
-	breakpoint: string[]; // Liste des breakpoints visibles
 }
