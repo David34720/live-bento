@@ -1,12 +1,17 @@
-// Header.tsx
-import React, { useState, useEffect, useRef, type FC } from "react";
+import React, {
+	useState,
+	useEffect,
+	useRef,
+	useCallback,
+	type FC,
+} from "react";
 import "bulma/css/bulma.min.css";
 import "./Header.scss";
 import type { BackgroundSettings, IVIsibleBreakPoints } from "../../@types";
 // Importation des différents menus
 import MenuGlobal from "./MenuGlobal/MenuGlobal";
 import MenuAddGrid from "./MenuGlobal/MenuAddGrid/MenuAddGrid";
-import MenuHomePageSettings from "./MenuGlobal//MenuHomePageSettings/MenuHomePageSettings";
+import MenuHomePageSettings from "./MenuGlobal/MenuHomePageSettings/MenuHomePageSettings";
 
 interface HeaderProps {
 	addItem: () => void;
@@ -33,27 +38,8 @@ const Header: FC<HeaderProps> = ({
 	// Ref to the dropdown
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
-	// Fermer le menu en cliquant en dehors
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				menuIsActive &&
-				dropdownRef.current &&
-				!dropdownRef.current.contains(event.target as Node)
-			) {
-				setMenuIsActive(false);
-			}
-		};
-
-		document.addEventListener("mousedown", handleClickOutside);
-
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-		};
-	}, [menuIsActive]);
-
 	// Choisir quel menu afficher
-	const renderMenuContent = () => {
+	const renderMenuContent = useCallback(() => {
 		switch (currentMenu) {
 			case "MenuGlobal":
 				return (
@@ -81,7 +67,6 @@ const Header: FC<HeaderProps> = ({
 						onChangeBackground={onChangeBackground}
 					/>
 				);
-			// Ajoutez d'autres menus ici selon vos besoins
 			default:
 				return (
 					<MenuGlobal
@@ -89,11 +74,20 @@ const Header: FC<HeaderProps> = ({
 						setCurrentMenu={setCurrentMenu}
 						currentBreakpoint={currentBreakpoint}
 						setSelectedBreakpoint={setCurrentBreakpoint}
-						breakpoints={breakpoints}
+						visibleBreakpoints={visibleBreakpoints}
 					/>
 				);
 		}
-	};
+	}, [
+		currentMenu,
+		isAdmin,
+		addItem,
+		setCurrentMenu,
+		currentBreakpoint,
+		setCurrentBreakpoint,
+		visibleBreakpoints,
+		onChangeBackground,
+	]);
 
 	return (
 		<div className="header">
@@ -137,4 +131,4 @@ const Header: FC<HeaderProps> = ({
 	);
 };
 
-export default Header;
+export default React.memo(Header);

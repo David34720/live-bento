@@ -1,4 +1,4 @@
-// MenuGlobal.tsx
+import React, { useCallback } from "react";
 import type { FC } from "react";
 import ResponsiveToggle from "./ResponsiveToggle/ResponsiveToggle";
 import type { IVIsibleBreakPoints } from "../../../@types";
@@ -18,6 +18,22 @@ const MenuGlobal: FC<MenuGlobalProps> = ({
 	setSelectedBreakpoint,
 	visibleBreakpoints,
 }) => {
+	const handleMenuAddGrid = useCallback(
+		(e: React.MouseEvent<HTMLButtonElement>) => {
+			e.preventDefault();
+			setCurrentMenu("MenuAddGrid"); // Change le menu sans fermer le dropdown
+		},
+		[setCurrentMenu],
+	);
+
+	const handleMenuHomePageSettings = useCallback(
+		(e: React.MouseEvent<HTMLButtonElement>) => {
+			e.preventDefault();
+			setCurrentMenu("MenuHomePageSettings"); // Change le menu sans fermer le dropdown
+		},
+		[setCurrentMenu],
+	);
+
 	return (
 		<div>
 			{/* Bouton pour toggle responsive */}
@@ -33,10 +49,7 @@ const MenuGlobal: FC<MenuGlobalProps> = ({
 				<button
 					type="button"
 					className="dropdown-item"
-					onClick={(e) => {
-						e.preventDefault();
-						setCurrentMenu("MenuAddGrid"); // Change le menu sans fermer le dropdown
-					}}
+					onClick={handleMenuAddGrid}
 				>
 					Ajouter une Grille
 				</button>
@@ -60,10 +73,7 @@ const MenuGlobal: FC<MenuGlobalProps> = ({
 				<button
 					type="button"
 					className="dropdown-item"
-					onClick={(e) => {
-						e.preventDefault();
-						setCurrentMenu("MenuHomePageSettings"); // Change le menu sans fermer le dropdown
-					}}
+					onClick={handleMenuHomePageSettings}
 				>
 					<span className="icon">
 						<i className="fas fa-cog" />
@@ -84,4 +94,4 @@ const MenuGlobal: FC<MenuGlobalProps> = ({
 	);
 };
 
-export default MenuGlobal;
+export default React.memo(MenuGlobal);

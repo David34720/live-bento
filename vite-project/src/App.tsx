@@ -1,9 +1,9 @@
-// App.tsx
 import React, {
 	useCallback,
 	useEffect,
 	useState,
 	useRef,
+	useMemo,
 	type CSSProperties,
 } from "react";
 import GridLayout from "./components/GridLayout/GridLayout";
@@ -31,18 +31,17 @@ function App() {
 	const [layouts, setLayouts] = useState<Layouts>({});
 	const [counter, setCounter] = useState<number>(0); // Compteur pour les nouveaux éléments
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
+	const [currentItemSelected, setCurrentItemSelected] = useState<string>("");
 
 	useEffect(() => {
 		async function initData() {
 			const foundUser = data.user.find((u) => u.id === 1);
 			if (foundUser) {
 				setUser(foundUser);
-				console.log(foundUser);
 				const userShops = data.shops.filter(
 					(shop) => shop.userId === foundUser.id,
 				);
 				setShops(userShops);
-				console.log(userShops);
 				if (userShops.length > 0) {
 					const firstShop = userShops[0] as Shop;
 					setCurrentShop(firstShop);
@@ -52,7 +51,7 @@ function App() {
 			}
 		}
 		initData();
-	}, []); // Retirer `currentShop` des dépendances
+	}, []);
 
 	// Utilisation correcte de useCallback avec les dépendances appropriées
 	const isAdminConnect = useCallback(() => {
@@ -70,20 +69,20 @@ function App() {
 	const [backgroundSettings, setBackgroundSettings] =
 		useState<BackgroundSettings>({});
 
-	const onChangeBackground = (newBackground: BackgroundSettings) => {
-		setBackgroundSettings(newBackground);
-	};
+	const onChangeBackground = useCallback(
+		(newBackground: BackgroundSettings) => {
+			setBackgroundSettings(newBackground);
+		},
+		[],
+	);
 
 	// Créer une référence pour le conteneur principal
 	const mainContentRef = useRef<HTMLDivElement>(null);
 
+	// Gestion des breakpoints par bouton dans dropdown menu ou avec le changement de la fenetre
 	const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
-
-	const [breakpoints, setBreakpoints] = useState<Breakpoints>(data.breakpoints);
-	const [maxWidthBreakpoints, setMaxWidthBreakpoints] = useState<Breakpoints>(
-		data.maxWidthBreakpoints,
-	);
-
+	const [breakpoints] = useState<Breakpoints>(data.breakpoints);
+	const [maxWidthBreakpoints] = useState<Breakpoints>(data.maxWidthBreakpoints);
 	const [visibleBreakpoints, setVisibleBreakpoints] = useState<string[]>([]);
 
 	useEffect(() => {
@@ -120,22 +119,16 @@ function App() {
 		return () => window.removeEventListener("resize", handleResize);
 	}, [breakpoints]);
 
-	// Définir les layouts initiaux
-	// const initialLayouts: Layouts = currentShop?.layouts || {};
-
-	// États pour les layouts et le compteur d'éléments
-	// const [layouts, setLayouts] = useState<Layouts>(currentShop?.layouts || {});
-
 	// Fonction appelée lorsque le layout change
-	const onLayoutChange = (
-		layout: ReactGridLayout.Layout[],
-		allLayouts: Layouts,
-	) => {
-		setLayouts(allLayouts); // Mettre à jour les layouts avec les nouvelles dispositions
-	};
+	const onLayoutChange = useCallback(
+		(layout: ReactGridLayout.Layout[], allLayouts: Layouts) => {
+			setLayouts(allLayouts); // Mettre à jour les layouts avec les nouvelles dispositions
+		},
+		[],
+	);
 
 	// Fonction pour ajouter un nouvel élément à la grille
-	const addItem = () => {
+	const addItem = useCallback(() => {
 		const newItemId = counter.toString(); // Nouvel identifiant basé sur le compteur
 		setLayouts((prevLayouts) => {
 			const newLayouts: Layouts = { ...prevLayouts }; // Copier les layouts existants
@@ -152,11 +145,11 @@ function App() {
 			}
 			return newLayouts; // Retourner les nouveaux layouts mis à jour
 		});
-		setCounter(counter + 1); // Incrémenter le compteur pour le prochain élément
-	};
+		setCounter((prevCounter) => prevCounter + 1); // Incrémenter le compteur pour le prochain élément
+	}, [counter]);
 
 	// Fonction pour supprimer un élément de la grille
-	const removeItem = (i: string) => {
+	const removeItem = useCallback((i: string) => {
 		setLayouts((prevLayouts) => {
 			const newLayouts: Layouts = { ...prevLayouts }; // Copier les layouts existants
 			for (const key of Object.keys(newLayouts)) {
@@ -165,21 +158,35 @@ function App() {
 			}
 			return newLayouts; // Retourner les layouts mis à jour
 		});
-	};
-	console.log("current brk", currentBreakpoint);
-	return (
-		<div
-			className="app"
-			ref={mainContentRef}
-			style={{
+	}, []);
+
+	// Utiliser useMemo pour mémoriser les styles
+	const appStyles = useMemo(
+		() =>
+			({
 				margin: "0 auto",
 				"--background-image": backgroundSettings.imageUrl
 					? `url(${backgroundSettings.imageUrl})`
 					: "none",
 				"--background-color": backgroundSettings.color || "transparent",
 				"--background-opacity": backgroundSettings.opacity ?? 1,
-			}}
-		>
+			}) as CSSProperties,
+		[backgroundSettings],
+	);
+
+	// Utiliser useMemo pour mémoriser les styles du GridLayout
+	const gridLayoutStyles = useMemo(
+		() => ({
+			height: "calc(100vh - 60px)",
+			maxWidth: `${maxWidthBreakpoints[currentBreakpoint]}px`,
+			margin: "0 auto",
+			transition: "max-width 0.3s ease",
+		}),
+		[currentBreakpoint, maxWidthBreakpoints],
+	);
+
+	return (
+		<div className="app" ref={mainContentRef} style={appStyles}>
 			<Header
 				addItem={addItem}
 				onChangeBackground={onChangeBackground}
@@ -187,7 +194,7 @@ function App() {
 				setIsAdmin={setIsAdmin}
 				currentBreakpoint={currentBreakpoint}
 				setCurrentBreakpoint={setCurrentBreakpoint} // Utiliser setCurrentBreakpoint
-				visibleBreakpoints={visibleBreakpoints as LayoutsShop} // Passer changeSizeScreen comme prop
+				visibleBreakpoints={visibleBreakpoints as LayoutsShop} // Passer visibleBreakpoints comme prop
 			/>
 			<div className="main-content">
 				{/* Ajoute une condition de rendu pour vérifier currentShop et currentBreakpoint */}
@@ -202,12 +209,7 @@ function App() {
 						compactType="vertical"
 						preventCollision={false}
 						autoSize={true}
-						style={{
-							height: "calc(100vh - 60px)",
-							maxWidth: `${maxWidthBreakpoints[currentBreakpoint]}px`,
-							margin: "0 auto",
-							transition: "max-width 0.3s ease",
-						}}
+						style={gridLayoutStyles}
 						currentBreakpoint={currentBreakpoint}
 						removeItem={removeItem}
 						currentShop={currentShop}
@@ -219,4 +221,4 @@ function App() {
 	);
 }
 
-export default App;
+export default React.memo(App);

@@ -73,7 +73,7 @@ const MenuHomePageSettings: FC<MenuHomePageSettingsProps> = ({
 								onChange={(e) => setOpacity(parseFloat(e.target.value))}
 							/>
 						</div>
-						<button class="button is-primary" onClick={handleApply}>
+						<button className="button is-primary" onClick={handleApply}>
 							Appliquer
 						</button>
 					</div>
