@@ -14,13 +14,17 @@ import type {
 	Shop,
 	User,
 	LayoutsShop,
+	IVisibleBreakPoints,
 } from "./@types";
 import "./App.scss";
 import type { Layouts } from "react-grid-layout";
 import "react-grid-layout/css/styles.css"; // Styles par défaut de react-grid-layout
 import "react-resizable/css/styles.css"; // Styles pour le redimensionnement
 import "bulma/css/bulma.min.css"; // Styles de Bulma
-
+// Importation des différents menus
+import MenuGlobal from "./components/Header/MenuGlobal/MenuGlobal";
+import MenuAddGrid from "./components/Header/MenuGlobal/MenuAddGrid/MenuAddGrid";
+import MenuHomePageSettings from "./components/Header/MenuGlobal/MenuHomePageSettings/MenuHomePageSettings";
 import data from "./data";
 
 function App() {
@@ -32,6 +36,37 @@ function App() {
 	const [counter, setCounter] = useState<number>(0); // Compteur pour les nouveaux éléments
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
 	const [currentItemSelected, setCurrentItemSelected] = useState<string>("");
+	const [menuIsActive, setMenuIsActive] = useState<boolean>(false);
+	const [currentMenu, setCurrentMenu] = useState<string>("MenuGlobal"); // Créer une référence pour le conteneur principal
+	const mainContentRef = useRef<HTMLDivElement>(null);
+	// Gestion des breakpoints par bouton dans dropdown menu ou avec le changement de la fenetre
+	const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
+	const [breakpoints] = useState<Breakpoints>(data.breakpoints);
+	const [maxWidthBreakpoints] = useState<Breakpoints>(data.maxWidthBreakpoints);
+	const [visibleBreakpoints, setVisibleBreakpoints] = useState<
+		IVisibleBreakPoints[]
+	>([]);
+
+	const [backgroundSettings, setBackgroundSettings] =
+		useState<BackgroundSettings>({});
+
+	const onChangeBackground = useCallback(
+		(newBackground: BackgroundSettings) => {
+			setBackgroundSettings(newBackground);
+		},
+		[],
+	);
+	const isAdminConnect = useCallback(() => {
+		if (user) {
+			setIsAdmin(user.isAdmin);
+		} else {
+			setIsAdmin(false);
+		}
+	}, [user]);
+
+	useEffect(() => {
+		isAdminConnect();
+	}, [isAdminConnect]);
 
 	useEffect(() => {
 		async function initData() {
@@ -52,81 +87,6 @@ function App() {
 		}
 		initData();
 	}, []);
-
-	// Utilisation correcte de useCallback avec les dépendances appropriées
-	const isAdminConnect = useCallback(() => {
-		if (user) {
-			setIsAdmin(user.isAdmin);
-		} else {
-			setIsAdmin(false);
-		}
-	}, [user]);
-
-	useEffect(() => {
-		isAdminConnect();
-	}, [isAdminConnect]);
-
-	const [backgroundSettings, setBackgroundSettings] =
-		useState<BackgroundSettings>({});
-
-	const onChangeBackground = useCallback(
-		(newBackground: BackgroundSettings) => {
-			setBackgroundSettings(newBackground);
-		},
-		[],
-	);
-
-	// Créer une référence pour le conteneur principal
-	const mainContentRef = useRef<HTMLDivElement>(null);
-
-	// Gestion des breakpoints par bouton dans dropdown menu ou avec le changement de la fenetre
-	const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
-	const [breakpoints] = useState<Breakpoints>(data.breakpoints);
-	const [maxWidthBreakpoints] = useState<Breakpoints>(data.maxWidthBreakpoints);
-	const [visibleBreakpoints, setVisibleBreakpoints] = useState<string[]>([]);
-
-	useEffect(() => {
-		const handleResize = () => {
-			const width = window.innerWidth;
-
-			if (width >= breakpoints.lg) {
-				setCurrentBreakpoint("lg");
-			} else if (width >= breakpoints.md) {
-				setCurrentBreakpoint("md");
-			} else if (width >= breakpoints.sm) {
-				setCurrentBreakpoint("sm");
-			} else if (width >= breakpoints.xs) {
-				setCurrentBreakpoint("xs");
-			} else {
-				setCurrentBreakpoint("xxs");
-			}
-
-			// Filtrer les breakpoints visibles en fonction de la taille de la fenêtre
-			const newVisibleBreakpoints = Object.entries(breakpoints)
-				.filter(([, breakpointWidth]) => breakpointWidth <= width)
-				.map(([key]) => key);
-
-			setVisibleBreakpoints(newVisibleBreakpoints);
-		};
-
-		// Écoute les changements de taille de la fenêtre
-		window.addEventListener("resize", handleResize);
-
-		// Exécute une fois pour ajuster le breakpoint et les boutons visibles à l'initialisation
-		handleResize();
-
-		// Nettoyage lors de la destruction du composant
-		return () => window.removeEventListener("resize", handleResize);
-	}, [breakpoints]);
-
-	// Fonction appelée lorsque le layout change
-	const onLayoutChange = useCallback(
-		(layout: ReactGridLayout.Layout[], allLayouts: Layouts) => {
-			setLayouts(allLayouts); // Mettre à jour les layouts avec les nouvelles dispositions
-		},
-		[],
-	);
-
 	// Fonction pour ajouter un nouvel élément à la grille
 	const addItem = useCallback(() => {
 		const newItemId = counter.toString(); // Nouvel identifiant basé sur le compteur
@@ -159,6 +119,94 @@ function App() {
 			return newLayouts; // Retourner les layouts mis à jour
 		});
 	}, []);
+	// Fonction appelée lorsque le layout change
+	const onLayoutChange = useCallback(
+		(layout: ReactGridLayout.Layout[], allLayouts: Layouts) => {
+			setLayouts(allLayouts); // Mettre à jour les layouts avec les nouvelles dispositions
+		},
+		[],
+	);
+
+	// Choisir quel menu afficher
+	const renderMenuContent = useCallback(() => {
+		switch (currentMenu) {
+			case "MenuGlobal":
+				return (
+					<MenuGlobal
+						isAdmin={isAdmin}
+						setCurrentMenu={setCurrentMenu}
+						currentBreakpoint={currentBreakpoint}
+						setSelectedBreakpoint={setCurrentBreakpoint}
+						visibleBreakpoints={visibleBreakpoints}
+					/>
+				);
+			case "MenuAddGrid":
+				return (
+					<MenuAddGrid
+						isAdmin={isAdmin}
+						addItem={addItem}
+						setCurrentMenu={setCurrentMenu}
+					/>
+				);
+			case "MenuHomePageSettings":
+				return (
+					<MenuHomePageSettings
+						isAdmin={isAdmin}
+						setCurrentMenu={setCurrentMenu}
+						onChangeBackground={onChangeBackground}
+					/>
+				);
+			default:
+				return (
+					<MenuGlobal
+						isAdmin={isAdmin}
+						setCurrentMenu={setCurrentMenu}
+						currentBreakpoint={currentBreakpoint}
+						setSelectedBreakpoint={setCurrentBreakpoint}
+						visibleBreakpoints={visibleBreakpoints}
+					/>
+				);
+		}
+	}, [
+		currentMenu,
+		isAdmin,
+		addItem,
+		setCurrentMenu,
+		currentBreakpoint,
+		setCurrentBreakpoint,
+		visibleBreakpoints,
+		onChangeBackground,
+	]);
+
+	// Utilisation correcte de useCallback avec les dépendances appropriées
+
+	useEffect(() => {
+		const handleResize = () => {
+			const width = window.innerWidth;
+			if (width >= breakpoints.lg) {
+				setCurrentBreakpoint("lg");
+			} else if (width >= breakpoints.md) {
+				setCurrentBreakpoint("md");
+			} else if (width >= breakpoints.sm) {
+				setCurrentBreakpoint("sm");
+			} else if (width >= breakpoints.xs) {
+				setCurrentBreakpoint("xs");
+			} else {
+				setCurrentBreakpoint("xxs");
+			}
+			// Filtrer les breakpoints visibles en fonction de la taille de la fenêtre
+			const newVisibleBreakpoints = Object.entries(breakpoints)
+				.filter(([, breakpointWidth]) => breakpointWidth <= width)
+				.map(([key]) => key);
+			setVisibleBreakpoints(newVisibleBreakpoints);
+		};
+		// Écoute les changements de taille de la fenêtre
+		window.addEventListener("resize", handleResize);
+		// Exécute une fois pour ajuster le breakpoint et les boutons visibles à l'initialisation
+		handleResize();
+		// Nettoyage lors de la destruction du composant
+		return () => window.removeEventListener("resize", handleResize);
+	}, [breakpoints]);
 
 	// Utiliser useMemo pour mémoriser les styles
 	const appStyles = useMemo(
@@ -192,6 +240,9 @@ function App() {
 				onChangeBackground={onChangeBackground}
 				isAdmin={isAdmin}
 				setIsAdmin={setIsAdmin}
+				renderMenuContent={renderMenuContent}
+				menuIsActive={menuIsActive}
+				setMenuIsActive={setMenuIsActive}
 				currentBreakpoint={currentBreakpoint}
 				setCurrentBreakpoint={setCurrentBreakpoint} // Utiliser setCurrentBreakpoint
 				visibleBreakpoints={visibleBreakpoints as LayoutsShop} // Passer visibleBreakpoints comme prop

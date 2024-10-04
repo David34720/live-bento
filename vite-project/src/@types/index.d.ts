@@ -37,7 +37,9 @@ export interface Shop {
 export interface Breakpoints {
 	[key: string]: number; // Associe chaque clé de breakpoint à une valeur numérique (taille en pixels)
 }
-
+interface IVisibleBreakPoints {
+	breakpoint: string;
+}
 export interface MaxWidthBreakpoints {
 	[key: string]: number; // Similaire à Breakpoints mais pour les largeurs maximales
 }

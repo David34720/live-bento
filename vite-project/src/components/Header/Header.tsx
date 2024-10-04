@@ -8,10 +8,6 @@ import React, {
 import "bulma/css/bulma.min.css";
 import "./Header.scss";
 import type { BackgroundSettings, IVIsibleBreakPoints } from "../../@types";
-// Importation des différents menus
-import MenuGlobal from "./MenuGlobal/MenuGlobal";
-import MenuAddGrid from "./MenuGlobal/MenuAddGrid/MenuAddGrid";
-import MenuHomePageSettings from "./MenuGlobal/MenuHomePageSettings/MenuHomePageSettings";
 
 interface HeaderProps {
 	addItem: () => void;
@@ -21,73 +17,41 @@ interface HeaderProps {
 	currentBreakpoint: string;
 	setCurrentBreakpoint: React.Dispatch<React.SetStateAction<string>>;
 	visibleBreakpoints: IVIsibleBreakPoints;
+	menuIsActive: boolean;
+	setMenuIsActive: React.Dispatch<React.SetStateAction<boolean>>;
+	setCurrentMenu: (menu: string) => void;
+	currentMenu: string;
+	renderMenuContent: () => JSX.Element;
 }
 
 const Header: FC<HeaderProps> = ({
-	addItem,
-	onChangeBackground,
 	isAdmin,
 	setIsAdmin,
-	currentBreakpoint,
-	setCurrentBreakpoint,
-	visibleBreakpoints,
+	menuIsActive,
+	setMenuIsActive,
+	renderMenuContent,
 }) => {
-	const [menuIsActive, setMenuIsActive] = useState<boolean>(false);
-	const [currentMenu, setCurrentMenu] = useState<string>("MenuGlobal");
-
 	// Ref to the dropdown
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
-	// Choisir quel menu afficher
-	const renderMenuContent = useCallback(() => {
-		switch (currentMenu) {
-			case "MenuGlobal":
-				return (
-					<MenuGlobal
-						isAdmin={isAdmin}
-						setCurrentMenu={setCurrentMenu}
-						currentBreakpoint={currentBreakpoint}
-						setSelectedBreakpoint={setCurrentBreakpoint}
-						visibleBreakpoints={visibleBreakpoints}
-					/>
-				);
-			case "MenuAddGrid":
-				return (
-					<MenuAddGrid
-						isAdmin={isAdmin}
-						addItem={addItem}
-						setCurrentMenu={setCurrentMenu}
-					/>
-				);
-			case "MenuHomePageSettings":
-				return (
-					<MenuHomePageSettings
-						isAdmin={isAdmin}
-						setCurrentMenu={setCurrentMenu}
-						onChangeBackground={onChangeBackground}
-					/>
-				);
-			default:
-				return (
-					<MenuGlobal
-						isAdmin={isAdmin}
-						setCurrentMenu={setCurrentMenu}
-						currentBreakpoint={currentBreakpoint}
-						setSelectedBreakpoint={setCurrentBreakpoint}
-						visibleBreakpoints={visibleBreakpoints}
-					/>
-				);
-		}
-	}, [
-		currentMenu,
-		isAdmin,
-		addItem,
-		setCurrentMenu,
-		currentBreakpoint,
-		setCurrentBreakpoint,
-		visibleBreakpoints,
-		onChangeBackground,
-	]);
+	// Fermer le menu en cliquant en dehors
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				menuIsActive &&
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setMenuIsActive(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [menuIsActive, setMenuIsActive]);
 
 	return (
 		<div className="header">
