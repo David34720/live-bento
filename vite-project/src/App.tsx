@@ -13,7 +13,7 @@ import type {
 	Breakpoints,
 	Shop,
 	User,
-	LayoutsShop,
+	LayoutItem,
 } from "./@types";
 import "./App.scss";
 import type { Layouts } from "react-grid-layout";
@@ -31,10 +31,11 @@ function App() {
 	const [user, setUser] = useState<User>();
 	const [shops, setShops] = useState<Shop[]>([]);
 	const [currentShop, setCurrentShop] = useState<Shop>();
-	const [layouts, setLayouts] = useState<Layouts>({});
+	const [layouts, setLayouts] = useState<LayoutItem>({});
 	const [counter, setCounter] = useState<number>(0); // Compteur pour les nouveaux éléments
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	const [currentItemSelected, setCurrentItemSelected] = useState<string>("");
+	const [currentItemSelected, setCurrentItemSelected] =
+		useState<LayoutItem>("");
 	const [menuIsActive, setMenuIsActive] = useState<boolean>(false);
 	const [currentMenu, setCurrentMenu] = useState<string>("MenuGlobal"); // Créer une référence pour le conteneur principal
 	const mainContentRef = useRef<HTMLDivElement>(null);

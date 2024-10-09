@@ -49,6 +49,21 @@ html, body, #root, .section {
   font-size: 1.2rem;
 }
 
+
+.fas{
+  
+  text-shadow: 0px 5px 15px rgb(0, 0, 0);
+  // border: 1px solid #00d1b2;
+  padding: 5px;
+  border-radius: 5px;
+  color: #00d1b2;
+  font-size: 1.2rem;
+  
+  &:hover {
+    color: #000cb8b7;
+  }
+}
+
 .delete-button {
   position: absolute;
   top: 5px;
@@ -58,8 +73,16 @@ html, body, #root, .section {
   color: #ff3860;
   font-size: 1.2rem;
   cursor: pointer;
+  &:hover {
+    color: #ff1f4c;
+  }
 }
 
-.delete-button:hover {
-  color: #ff1f4c;
+.edit-button {
+  position: absolute;
+  top: 5px;
+  right: 50px;
+  background: transparent;
+  // mettre une ombre sur l'objet
+  cursor: pointer;
 }
