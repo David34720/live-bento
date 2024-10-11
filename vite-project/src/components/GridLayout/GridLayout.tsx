@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import type { FC } from "react";
-import type { LayoutItem, Shop } from "../../@types";
-import { Responsive, WidthProvider, type Layouts } from "react-grid-layout";
+import type { LayoutItem, Shop, LayoutsShop } from "../../@types";
+import { Responsive, WidthProvider, type Layouts, Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css"; // Styles par défaut de react-grid-layout
 import "react-resizable/css/styles.css"; // Styles pour le redimensionnement
 import "bulma/css/bulma.min.css"; // Styles de Bulma
@@ -10,10 +10,10 @@ import GridItemLogo from "../gridComponents/gridItemLogo/gridItemLogo";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 interface GridLayoutProps {
-	layouts: Layouts;
+	layouts: LayoutsShop;
 	onLayoutChange: (
-		layout: ReactGridLayout.Layout[],
-		allLayouts: Layouts,
+		layout: Layout[],
+		allLayouts: LayoutsShop,
 	) => void;
 	breakpoints: { [key: string]: number };
 	cols: { [key: string]: number };
@@ -57,12 +57,12 @@ const GridLayout: FC<GridLayoutProps> = React.memo(
 								currentBreakpoint={currentBreakpoint}
 							/>
 						);
-					case "header":
+					case "title":
 						return <div>Ceci est un en-tête</div>;
 					case "footer":
 						return <div>Ceci est un pied de page</div>;
 					default:
-						return <div>Composant non trouvé</div>;
+						return <div></div>;
 				}
 			},
 			[currentShop, currentBreakpoint],
@@ -139,7 +139,7 @@ const GridLayout: FC<GridLayoutProps> = React.memo(
 								onClick={() => removeItem(item.i)}
 							/>
 						)}
-						{chooseComponentToDisplay(item, currentShop, currentBreakpoint)}
+						{chooseComponentToDisplay(item as LayoutItem, currentShop, currentBreakpoint)}
 						{isAdmin && (
 							// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 							<i

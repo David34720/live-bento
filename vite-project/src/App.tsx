@@ -12,8 +12,10 @@ import type {
 	BackgroundSettings,
 	Breakpoints,
 	Shop,
+	Users,
 	User,
 	LayoutItem,
+	LayoutsShop,
 } from "./@types";
 import "./App.scss";
 import type { Layouts } from "react-grid-layout";
@@ -26,12 +28,13 @@ import MenuAddGrid from "./components/Header/MenuGlobal/MenuAddGrid/MenuAddGrid"
 import MenuHomePageSettings from "./components/Header/MenuGlobal/MenuHomePageSettings/MenuHomePageSettings";
 import data from "./data";
 
+
 function App() {
 	// Initialiser les données user et shops
 	const [user, setUser] = useState<User>();
 	const [shops, setShops] = useState<Shop[]>([]);
 	const [currentShop, setCurrentShop] = useState<Shop>();
-	const [layouts, setLayouts] = useState<LayoutItem>({});
+	const [layouts, setLayouts] = useState<LayoutsShop>();
 	const [counter, setCounter] = useState<number>(0); // Compteur pour les nouveaux éléments
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
 	const [currentItemSelected, setCurrentItemSelected] =
@@ -66,15 +69,25 @@ function App() {
 		isAdminConnect();
 	}, [isAdminConnect]);
 
+	const ensureLayouts = (layouts: LayoutsShop): LayoutsShop => {
+		return {
+			lg: layouts.lg || [],
+			md: layouts.md || [],
+			sm: layouts.sm || [],
+			xs: layouts.xs || [],
+			xxs: layouts.xxs || []
+		};
+	};
+
 	useEffect(() => {
 		async function initData() {
-			const foundUser = data.user.find((u) => u.id === 1);
+			const foundUser = data.users.find((u) => u.id === 1);
 			if (foundUser) {
 				setUser(foundUser);
 				const userShops = data.shops.filter(
 					(shop) => shop.userId === foundUser.id,
 				);
-				setShops(userShops);
+				setShops(userShops.map(shop => ({ ...shop, layouts: ensureLayouts(shop.layouts as LayoutsShop) })));
 				if (userShops.length > 0) {
 					const firstShop = userShops[0] as Shop;
 					setCurrentShop(firstShop);
@@ -85,41 +98,70 @@ function App() {
 		}
 		initData();
 	}, []);
-	// Fonction pour ajouter un nouvel élément à la grille
-	const addItem = useCallback(() => {
-		const newItemId = counter.toString(); // Nouvel identifiant basé sur le compteur
-		setLayouts((prevLayouts) => {
-			const newLayouts: Layouts = { ...prevLayouts }; // Copier les layouts existants
-			for (const key of Object.keys(newLayouts)) {
-				const breakpointLayouts = newLayouts[key]; // Récupérer le layout pour chaque breakpoint
-				const newItem: ReactGridLayout.Layout = {
-					i: newItemId, // Identifiant unique de l'élément
-					x: 0, // Position X initiale
-					y: Number.POSITIVE_INFINITY, // Position Y pour placer en bas
-					w: breakpointLayouts[0]?.w || 4, // Largeur (utilise la largeur du premier élément ou 4 par défaut)
-					h: breakpointLayouts[0]?.h || 2, // Hauteur (utilise la hauteur du premier élément ou 2 par défaut)
-				};
-				newLayouts[key] = [...breakpointLayouts, newItem]; // Ajouter le nouvel élément au layout
-			}
-			return newLayouts; // Retourner les nouveaux layouts mis à jour
-		});
-		setCounter((prevCounter) => prevCounter + 1); // Incrémenter le compteur pour le prochain élément
-	}, [counter]);
+// Fonction pour ajouter un nouvel élément à la grille
+const addItem = useCallback(() => {
+    const newItemId = counter.toString(); // Nouvel identifiant basé sur le compteur
+
+    setLayouts((prevLayouts: LayoutsShop | undefined) => {
+        // Copier les layouts existants tout en initialisant les breakpoints manquants à []
+        const newLayouts: LayoutsShop = {
+            lg: prevLayouts?.lg ?? [], // Si lg est undefined, initialiser à []
+            md: prevLayouts?.md ?? [], // Si md est undefined, initialiser à []
+            sm: prevLayouts?.sm ?? [],
+            xs: prevLayouts?.xs ?? [],
+            xxs: prevLayouts?.xxs ?? []
+        };
+
+        // Boucle à travers chaque breakpoint
+        for (const key of Object.keys(newLayouts)) {
+            // Récupérer le layout pour chaque breakpoint
+            const breakpointLayouts = newLayouts[key as keyof LayoutsShop];
+
+            // Créer le nouvel élément à ajouter à la grille
+            const newItem: LayoutItem = {
+                i: newItemId, // Identifiant unique de l'élément
+                x: 0, // Position X initiale
+                y: Number.POSITIVE_INFINITY, // Position Y initiale
+                w: breakpointLayouts[0]?.w || 4, // Largeur (par défaut ou celle du premier élément)
+                h: breakpointLayouts[0]?.h || 2, // Hauteur (par défaut ou celle du premier élément)
+                component: "logo", // Ajouter un type de composant par défaut (à personnaliser selon ton besoin)
+            };
+
+            // Ajouter le nouvel élément à la disposition du breakpoint actuel
+            newLayouts[key as keyof LayoutsShop] = [...breakpointLayouts, newItem];
+        }
+
+        // Retourner les nouveaux layouts mis à jour
+        return newLayouts;
+    });
+
+    // Incrémenter le compteur pour garantir un identifiant unique à chaque nouvel élément
+    setCounter((prevCounter) => prevCounter + 1);
+}, [counter]);
+
+
+
 
 	// Fonction pour supprimer un élément de la grille
 	const removeItem = useCallback((i: string) => {
 		setLayouts((prevLayouts) => {
-			const newLayouts: Layouts = { ...prevLayouts }; // Copier les layouts existants
+			const newLayouts: LayoutsShop = {
+            lg: prevLayouts?.lg ?? [], // Si lg est undefined, initialiser à []
+            md: prevLayouts?.md ?? [], // Si md est undefined, initialiser à []
+            sm: prevLayouts?.sm ?? [],
+            xs: prevLayouts?.xs ?? [],
+            xxs: prevLayouts?.xxs ?? []
+        };
 			for (const key of Object.keys(newLayouts)) {
 				// Filtrer les éléments pour supprimer celui avec l'identifiant 'i'
-				newLayouts[key] = newLayouts[key].filter((item) => item.i !== i);
+				newLayouts[key as keyof LayoutsShop] = newLayouts[key as keyof LayoutsShop].filter((item) => item.i !== i);
 			}
 			return newLayouts; // Retourner les layouts mis à jour
 		});
 	}, []);
 	// Fonction appelée lorsque le layout change
 	const onLayoutChange = useCallback(
-		(layout: ReactGridLayout.Layout[], allLayouts: Layouts) => {
+		(layout: ReactGridLayout.Layout[], allLayouts: LayoutsShop) => {
 			setLayouts(allLayouts); // Mettre à jour les layouts avec les nouvelles dispositions
 		},
 		[],
@@ -247,7 +289,7 @@ function App() {
 			/>
 			<div className="main-content">
 				{/* Ajoute une condition de rendu pour vérifier currentShop et currentBreakpoint */}
-				{currentShop && currentBreakpoint && (
+				{currentShop && currentBreakpoint && layouts && (
 					<GridLayout
 						layouts={layouts}
 						onLayoutChange={onLayoutChange}
