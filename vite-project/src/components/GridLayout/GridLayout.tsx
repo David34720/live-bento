@@ -28,6 +28,11 @@ interface GridLayoutProps {
 	removeItem: (i: string) => void;
 	currentShop: Shop;
 	isAdmin: boolean;
+	selectedItem: LayoutItem | null;
+	setSelectedItem: (item: LayoutItem | null) => void;
+	setCurrentMenu: (menu: string) => void;
+	setMenuIsActive: (menuIsActive: boolean) => void;
+	menuIsActive: boolean;
 }
 
 const GridLayout: FC<GridLayoutProps> = React.memo(
@@ -46,6 +51,11 @@ const GridLayout: FC<GridLayoutProps> = React.memo(
 		removeItem,
 		currentShop,
 		isAdmin,
+		selectedItem,
+		setSelectedItem,
+		setCurrentMenu,
+		setMenuIsActive,
+		menuIsActive,
 	}) => {
 		const chooseComponentToDisplay = useCallback(
 		(item: LayoutItem, currentShop: Shop, currentBreakpoint: string) => {
@@ -73,12 +83,20 @@ const GridLayout: FC<GridLayoutProps> = React.memo(
 		},
 		[currentShop, currentBreakpoint]
 	);
-// todo: ajouter un bouton pour ajouter un nouvel item
-		const handleEditItem = (component: string) => {
-			if (isAdmin) {
-				removeItem(component);
-			}
+		// todo: ajouter un bouton pour ajouter un nouvel item
+		const capitalizeFirstLetter = (string: string) => {
+			return string.charAt(0).toUpperCase() + string.slice(1);
 		};
+		const handleEditItem = useCallback(
+			(item: LayoutItem) => {
+				if (isAdmin) {
+					setSelectedItem(item);
+					setCurrentMenu(`Component${capitalizeFirstLetter(item.component)}Settings`);
+					setMenuIsActive(true);
+				}
+			},
+			[isAdmin, setSelectedItem, setCurrentMenu, setMenuIsActive]
+		);
 
 		return (
 			<ResponsiveGridLayout
@@ -143,7 +161,7 @@ const GridLayout: FC<GridLayoutProps> = React.memo(
 							// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 							<i
 								className="edit-button fas fa-pen fa-2x"
-								onClick={() => removeItem(item.i)}
+								onClick={() => handleEditItem(item as LayoutItem)}
 							/>
 						)}
 						{chooseComponentToDisplay(item as LayoutItem, currentShop, currentBreakpoint)}

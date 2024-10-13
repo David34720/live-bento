@@ -43,6 +43,9 @@ export interface BackgroundSettings {
 	imageUrl?: string;
 	color?: string;
 	opacity?: number;
+	fontColor?: string;
+	fontSize?: string;
+	fontWeight?: string;
 }
 
 // Définition des propriétés spécifiques des composants

@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import type { FC } from "react";
 import ResponsiveToggle from "./ResponsiveToggle/ResponsiveToggle";
-import type {} from "../../../@types";
+import type {  LayoutItem } from "../../../@types";
 
 interface MenuGlobalProps {
 	isAdmin: boolean;
@@ -33,7 +33,7 @@ const MenuGlobal: FC<MenuGlobalProps> = ({
 		},
 		[setCurrentMenu],
 	);
-
+	
 	return (
 		<div>
 			{/* Bouton pour toggle responsive */}
@@ -54,6 +54,7 @@ const MenuGlobal: FC<MenuGlobalProps> = ({
 					Ajouter une Grille
 				</button>
 			)}
+			
 			{/* Lien Administratif, visible seulement si l'utilisateur est admin */}
 			{isAdmin && (
 				<button type="button" className="dropdown-item">

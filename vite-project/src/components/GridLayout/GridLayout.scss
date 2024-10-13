@@ -36,8 +36,20 @@ html, body, #root, .section {
   font-size: 16px;
   text-align: center;
   overflow: hidden; // Empêcher le contenu de déborder
-  max-width: 100%; // Limiter la largeur de la cellule au maximum autorisé
-  max-height: 100%;
+  width: 100%; // Limiter la largeur de la cellule au maximum autorisé
+  height: 100%;
+  white-space: nowrap;
+}
+
+.box H1 { 
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden; // Empêcher le contenu de déborder
+
   white-space: nowrap;
 }
 

@@ -7,11 +7,14 @@ import React, {
 } from "react";
 import "bulma/css/bulma.min.css";
 import "./Header.scss";
-import type { BackgroundSettings } from "../../@types";
+import type { BackgroundSettings, ComponentType } from "../../@types";
+
 
 interface HeaderProps {
-	addItem: () => void;
+	addItem: (componentType: ComponentType) => void;
 	onChangeBackground: (background: BackgroundSettings) => void;
+	BackgroundSettings: BackgroundSettings;
+	setBackgroundSettings: (background: BackgroundSettings) => void;
 	isAdmin: boolean;
 	setIsAdmin: (isAdmin: boolean) => void;
 	currentBreakpoint: string;
@@ -21,7 +24,7 @@ interface HeaderProps {
 	setMenuIsActive: React.Dispatch<React.SetStateAction<boolean>>;
 	setCurrentMenu: (menu: string) => void;
 	currentMenu: string;
-	renderMenuContent: () => JSX.Element;
+	renderMenuContent: () => JSX.Element | null;
 }
 
 const Header: FC<HeaderProps> = ({

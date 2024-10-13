@@ -26,7 +26,11 @@ import "bulma/css/bulma.min.css"; // Styles de Bulma
 import MenuGlobal from "./components/Header/MenuGlobal/MenuGlobal";
 import MenuAddGrid from "./components/Header/MenuGlobal/MenuAddGrid/MenuAddGrid";
 import MenuHomePageSettings from "./components/Header/MenuGlobal/MenuHomePageSettings/MenuHomePageSettings";
+import type { ComponentType } from "./@types";
+import ComponentLogoSettings from "./components/Header/MenuGlobal/ComponentsPropsSettings/ComponentLogoSettings/ComponentLogoSettings";
+import ComponentTitleSettings from "./components/Header/MenuGlobal/ComponentsPropsSettings/ComponentTitleSettings/ComponentTitleSettings";
 import data from "./data";
+
 
 
 function App() {
@@ -37,8 +41,7 @@ function App() {
 	const [layouts, setLayouts] = useState<LayoutsShop>();
 	const [counter, setCounter] = useState<number>(0); // Compteur pour les nouveaux éléments
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	const [currentItemSelected, setCurrentItemSelected] =
-		useState<LayoutItem>("");
+	const [selectedItem, setSelectedItem] = useState<LayoutItem | null>(null);
 	const [menuIsActive, setMenuIsActive] = useState<boolean>(false);
 	const [currentMenu, setCurrentMenu] = useState<string>("MenuGlobal"); // Créer une référence pour le conteneur principal
 	const mainContentRef = useRef<HTMLDivElement>(null);
@@ -48,8 +51,7 @@ function App() {
 	const [maxWidthBreakpoints] = useState<Breakpoints>(data.maxWidthBreakpoints);
 	const [visibleBreakpoints, setVisibleBreakpoints] = useState<string[]>();
 
-	const [backgroundSettings, setBackgroundSettings] =
-		useState<BackgroundSettings>({});
+	const [backgroundSettings, setBackgroundSettings] = useState<BackgroundSettings>({});
 
 	const onChangeBackground = useCallback(
 		(newBackground: BackgroundSettings) => {
@@ -93,6 +95,14 @@ function App() {
 					setCurrentShop(firstShop);
 					setLayouts(firstShop.layouts);
 					setCounter(Object.keys(firstShop.layouts).length - 1);
+					setBackgroundSettings(firstShop.BackgroundSettings || {
+						imageUrl: "",
+						color: "#ffffff",
+						opacity: 1,
+						fontColor: "#000000",
+						fontSize: "16px",
+						fontWeight: "normal",
+					});
 				}
 			}
 		}
@@ -113,56 +123,75 @@ const addItem = useCallback((componentType: ComponentType) => {
 
     for (const key of Object.keys(newLayouts)) {
       const breakpointLayouts = newLayouts[key as keyof LayoutsShop];
-
       // Initialiser componentProps en fonction de componentType
       let componentProps: any = {};
       switch (componentType) {
-        case "logo":
-          componentProps = {
-            imgUrl: "logo.png",
+				case "logo":
+					componentProps = {
+						imgUrl: "logo.png",
             altText: "Logo par défaut",
             styles: {
-              bgColor: "#ffffff",
-              borderColor: "#000000",
-              borderSize: 1,
+							bgColor: "",
+              borderColor: "",
+              borderSize: 0,
             },
           };
           break;
-        case "title":
-          componentProps = {
-            text: "Titre par défaut",
-            styles: {
-              fontSize: "16px",
-              color: "#000000",
-            },
-          };
-          break;
-        // Ajouter des cas pour les autres types de composants...
-        default:
-          break;
-      }
-
-      const newItem: LayoutItem = {
-        i: newItemId,
-        x: 0,
-        y: Number.POSITIVE_INFINITY,
-        w: breakpointLayouts[0]?.w || 4,
-        h: breakpointLayouts[0]?.h || 2,
-        component: componentType,
-        componentProps: componentProps,
-        styles: {},
-        hidden: [],
-      };
-
-      newLayouts[key as keyof LayoutsShop] = [...breakpointLayouts, newItem];
+					case "title":
+						componentProps = {
+							text: "Titre par défaut",
+							styles: {
+								fontSize: backgroundSettings.fontSize,
+								fontWeight: backgroundSettings.fontWeight,
+								color: backgroundSettings.fontColor,
+							},
+						};
+						break;
+						// Ajouter des cas pour les autres types de composants...
+						default:
+							break;
+						}
+						
+						const newItem: LayoutItem = {
+							i: newItemId,
+							x: 0,
+							y: Number.POSITIVE_INFINITY,
+							w: breakpointLayouts[0]?.w || 4,
+							h: breakpointLayouts[0]?.h || 2,
+							component: componentType,
+							componentProps: componentProps,
+							styles: {},
+							hidden: [],
+						};
+						
+						newLayouts[key as keyof LayoutsShop] = [...breakpointLayouts, newItem];
+						console.log("Build New Layouts", newLayouts);
     }
-		console.log(newLayouts);
+	
     return newLayouts;
   });
 
   setCounter((prevCounter) => prevCounter + 1);
 }, [counter]);
 
+const updateItemProps = useCallback(
+  (updatedItem: LayoutItem) => {
+    setLayouts((prevLayouts) => {
+      if (!prevLayouts) return prevLayouts;
+
+      const newLayouts: LayoutsShop = { ...prevLayouts };
+
+      for (const breakpoint of Object.keys(newLayouts)) {
+        newLayouts[breakpoint] = newLayouts[breakpoint].map((item) =>
+          item.i === updatedItem.i ? updatedItem : item
+        );
+      }
+
+      return newLayouts;
+    });
+  },
+  [setLayouts]
+);
 
 
 
@@ -218,55 +247,92 @@ const addItem = useCallback((componentType: ComponentType) => {
 		[layouts, currentBreakpoint],
 	);
 
-
+const capitalizeFirstLetter = (string: string) => {
+			return string.charAt(0).toUpperCase() + string.slice(1);
+		};
 	// Choisir quel menu afficher
 	const renderMenuContent = useCallback(() => {
-		switch (currentMenu) {
-			case "MenuGlobal":
-				return (
-					<MenuGlobal
-						isAdmin={isAdmin}
-						setCurrentMenu={setCurrentMenu}
-						currentBreakpoint={currentBreakpoint}
-						setSelectedBreakpoint={setCurrentBreakpoint}
-						visibleBreakpoints={visibleBreakpoints ?? []}
-					/>
-				);
-			case "MenuAddGrid":
-				return (
-					<MenuAddGrid
-						isAdmin={isAdmin}
-						addItem={addItem}
-						setCurrentMenu={setCurrentMenu}
-					/>
-				);
-			case "MenuHomePageSettings":
-				return (
-					<MenuHomePageSettings
-						isAdmin={isAdmin}
-						setCurrentMenu={setCurrentMenu}
-						onChangeBackground={onChangeBackground}
-					/>
-				);
-			default:
-				return (
-					<MenuGlobal
-						isAdmin={isAdmin}
-						setCurrentMenu={setCurrentMenu}
-						currentBreakpoint={currentBreakpoint}
-						setSelectedBreakpoint={setCurrentBreakpoint}
-						visibleBreakpoints={visibleBreakpoints ?? []}
-					/>
-				);
-		}
-	}, [
-		currentMenu,
-		isAdmin,
-		addItem,
-		currentBreakpoint,
-		visibleBreakpoints,
-		onChangeBackground,
-	]);
+  switch (currentMenu) {
+    case "MenuGlobal":
+      return (
+        <MenuGlobal
+          isAdmin={isAdmin}
+          setCurrentMenu={setCurrentMenu}
+          currentBreakpoint={currentBreakpoint}
+          setSelectedBreakpoint={setCurrentBreakpoint}
+          visibleBreakpoints={visibleBreakpoints ?? []}
+        />
+      );
+    case "MenuAddGrid":
+      return (
+        <MenuAddGrid
+          isAdmin={isAdmin}
+          addItem={addItem}
+          setCurrentMenu={setCurrentMenu}
+        />
+      );
+    case "MenuHomePageSettings":
+      return (
+        <MenuHomePageSettings
+          isAdmin={isAdmin}
+          setCurrentMenu={setCurrentMenu}
+					onChangeBackground={onChangeBackground}
+					backgroundSettings={backgroundSettings}
+        />
+      );
+    // Gérer dynamiquement les composants de paramètres
+    default:
+      if (selectedItem) {
+        const componentSettingsMenu = `Component${capitalizeFirstLetter(selectedItem.component)}Settings`;
+        if (currentMenu === componentSettingsMenu) {
+          // Rendre le composant de paramètres correspondant
+          switch (selectedItem.component) {
+            case "logo":
+              return (
+                <ComponentLogoSettings
+                  item={selectedItem}
+                  updateItemProps={updateItemProps}
+                  setCurrentMenu={setCurrentMenu}
+                />
+              );
+            case "title":
+              return (
+                <ComponentTitleSettings
+                  item={selectedItem}
+                  updateItemProps={updateItemProps}
+                  setCurrentMenu={setCurrentMenu}
+									
+                />
+              );
+            // Ajouter des cas pour d'autres types de composants...
+            default:
+              return null;
+          }
+        }
+      }
+      // Par défaut, retourner le MenuGlobal
+      return (
+        <MenuGlobal
+          isAdmin={isAdmin}
+          setCurrentMenu={setCurrentMenu}
+          currentBreakpoint={currentBreakpoint}
+          setSelectedBreakpoint={setCurrentBreakpoint}
+          visibleBreakpoints={visibleBreakpoints ?? []}
+        />
+      );
+  }
+}, [
+  currentMenu,
+  isAdmin,
+  currentBreakpoint,
+  visibleBreakpoints,
+  selectedItem,
+  setSelectedItem,
+  updateItemProps,
+  layouts,
+  onChangeBackground,
+]);
+
 
 	// Utilisation correcte de useCallback avec les dépendances appropriées
 
@@ -326,8 +392,10 @@ const addItem = useCallback((componentType: ComponentType) => {
 	return (
 		<div className="app" ref={mainContentRef} style={appStyles}>
 			<Header
-				addItem={addItem}
+				addItem={(componentType) => addItem(componentType)}
 				onChangeBackground={onChangeBackground}
+				BackgroundSettings={backgroundSettings}
+				setBackgroundSettings={setBackgroundSettings}
 				isAdmin={isAdmin}
 				setIsAdmin={setIsAdmin}
 				renderMenuContent={renderMenuContent}
@@ -357,6 +425,11 @@ const addItem = useCallback((componentType: ComponentType) => {
 						removeItem={removeItem}
 						currentShop={currentShop}
 						isAdmin={isAdmin}
+						selectedItem={selectedItem}
+						setSelectedItem={setSelectedItem}
+						setCurrentMenu={setCurrentMenu}
+						setMenuIsActive={setMenuIsActive}
+						menuIsActive={menuIsActive}
 					/>
 				)}
 			</div>

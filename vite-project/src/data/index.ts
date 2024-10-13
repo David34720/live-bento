@@ -287,6 +287,9 @@ export default {
 				imageUrl: "background1.jpg",
 				color: "#ffffff",
 				opacity: 0.9,
+				fontColor: "#000000",
+				fontSize: "16px",
+				fontWeight: "normal",
 			},
 		},
 		{

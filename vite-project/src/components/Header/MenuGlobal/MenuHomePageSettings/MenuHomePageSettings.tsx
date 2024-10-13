@@ -1,33 +1,38 @@
 import { useState, type FC } from "react";
+import { BackgroundSettings } from "../../../../@types";	
 
 interface MenuHomePageSettingsProps {
 	isAdmin: boolean;
 	setCurrentMenu: (menu: string) => void;
 	onChangeBackground: (background: BackgroundSettings) => void;
+	backgroundSettings: BackgroundSettings;
 }
-interface BackgroundSettings {
-	imageUrl?: string;
-	color?: string;
-	opacity?: number;
-}
+
 
 const MenuHomePageSettings: FC<MenuHomePageSettingsProps> = ({
 	isAdmin,
 	setCurrentMenu,
 	onChangeBackground,
+	backgroundSettings,
 }) => {
-	const [color, setColor] = useState("");
-	const [imageUrl, setImageUrl] = useState("");
-	const [opacity, setOpacity] = useState<number>(0.5);
+	const [color, setColor] = useState(backgroundSettings.color);
+	const [imageUrl, setImageUrl] = useState(backgroundSettings.imageUrl);
+	const [opacity, setOpacity] = useState<number>(backgroundSettings.opacity as number);
+	const [fontColor, setFontColor] = useState(backgroundSettings.fontColor);
+	const [fontSize, setFontSize] = useState<string>(backgroundSettings.fontSize as string);
+	const [fontWeight, setFontWeight] = useState<string>(backgroundSettings.fontWeight as string);
 
 	const handleApply = () => {
-		const backgroundSettings: BackgroundSettings = {
-			imageUrl: imageUrl || undefined,
-			color: color || undefined,
+		const newBackgroundSettings: BackgroundSettings = {
+			imageUrl: imageUrl || "",
+			color: color || "#ffffff",
 			opacity: opacity,
+			fontColor: fontColor || "#000000",
+			fontSize: fontSize || "16px",
+			fontWeight: fontWeight || "normal",
 		};
 
-		onChangeBackground(backgroundSettings);
+		onChangeBackground(newBackgroundSettings);
 	};
 
 	return (
@@ -72,6 +77,51 @@ const MenuHomePageSettings: FC<MenuHomePageSettingsProps> = ({
 								value={opacity}
 								onChange={(e) => setOpacity(parseFloat(e.target.value))}
 							/>
+						</div>
+						<div className="nav-element">
+							<label>Taille texte : </label>
+							<input
+								type="text"
+								placeholder="ex : 16px"
+								value={fontSize}
+								onChange={(e) => setFontSize(e.target.value)}
+							/>
+						</div>
+						<div className="nav-element">
+							<label>Couleur texte : </label>
+							<input
+								type="text"
+								value={fontColor}
+								onChange={(e) => setFontColor(e.target.value)}
+							/>
+							<input
+								type="color"
+								value={fontColor}
+								onChange={(e) => setFontColor(e.target.value)}
+							/>
+						</div>
+						<div className="nav-element">
+							<label>Epaisseur texte : </label>
+							<div className="select">
+								<select
+									value={fontWeight}
+									onChange={(e) => setFontWeight(e.target.value)}
+								>
+									<option value="normal">normal</option>
+									<option value="bold">gras</option>
+									<option value="bolder">très gras</option>
+									<option value="lighter">léger</option>
+									<option value="100">100</option>
+									<option value="200">200</option>
+									<option value="300">300</option>
+									<option value="400">400</option>
+									<option value="500">500</option>
+									<option value="600">600</option>
+									<option value="700">700</option>
+									<option value="800">800</option>
+									<option value="900">900</option>
+								</select>
+							</div>
 						</div>
 						<button className="button is-primary" onClick={handleApply}>
 							Appliquer
