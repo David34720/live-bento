@@ -18,7 +18,7 @@ import type {
 	LayoutsShop,
 } from "./@types";
 import "./App.scss";
-import type { Layouts } from "react-grid-layout";
+import type { Layouts, Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css"; // Styles par défaut de react-grid-layout
 import "react-resizable/css/styles.css"; // Styles pour le redimensionnement
 import "bulma/css/bulma.min.css"; // Styles de Bulma
@@ -331,7 +331,8 @@ const capitalizeFirstLetter = (string: string) => {
               );
             case "title":
               return (
-                <ComponentTitleSettings
+								<ComponentTitleSettings
+									breakpoints={breakpoints}
                   item={selectedItem}
                   updateItemProps={updateItemProps}
                   setCurrentMenu={setCurrentMenu}
@@ -415,7 +416,7 @@ const capitalizeFirstLetter = (string: string) => {
 	// Utiliser useMemo pour mémoriser les styles du GridLayout
 	const gridLayoutStyles = useMemo(
 		() => ({
-			height: "calc(100vh - 60px)",
+			minHeight: "calc(100vh - 60px)",
 			maxWidth: `${maxWidthBreakpoints[currentBreakpoint]}px`,
 			margin: "0 auto",
 			transition: "max-width 0.3s ease",

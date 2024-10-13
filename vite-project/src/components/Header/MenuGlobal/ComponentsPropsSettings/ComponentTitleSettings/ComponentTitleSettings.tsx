@@ -1,17 +1,23 @@
 // ComponentTitleSettings.tsx
 import React, { useState, FC } from "react";
-import { LayoutItem } from "../../../@types";
+import { Breakpoints, LayoutItem } from '../../../../../@types/index';
+
+import ResponsiveViewComponent from "../../../../GridComponents/ResponsiveViewComponent/ResponsiveViewComponent";
+
+type TitleLayoutItem = Extract<LayoutItem, { component: "title" }>;
 
 interface ComponentTitleSettingsProps {
-  item: LayoutItem;
+  item: TitleLayoutItem;
   updateItemProps: (updatedItem: LayoutItem) => void;
   setCurrentMenu: (menu: string) => void;
+  breakpoints: Breakpoints;
 }
 
 const ComponentTitleSettings: FC<ComponentTitleSettingsProps> = ({
   item,
   updateItemProps,
   setCurrentMenu,
+  breakpoints,
 }) => {
   const [text, setText] = useState<string>(item.componentProps?.text || "");
   const [fontSize, setFontSize] = useState<string>(
@@ -35,11 +41,14 @@ const ComponentTitleSettings: FC<ComponentTitleSettingsProps> = ({
   const [textAlign, setTextAlign] = useState<string>(
     item.componentProps?.styles?.textAlign || "left"
   )
+  const [itemHiddenBreakpoints, setItemHiddenBreakpoints] = useState<string[]>(item.hidden || []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedItem: LayoutItem = {
+    const updatedItem: TitleLayoutItem = {
       ...item,
+
+      hidden: itemHiddenBreakpoints,
       componentProps: {
         ...item.componentProps,
         text,
@@ -61,6 +70,14 @@ const ComponentTitleSettings: FC<ComponentTitleSettingsProps> = ({
 
   return (
     <div className="component-title-settings">
+       <span className="subtitle">Configuration de "Logo"</span>
+      <hr className="dropdown-divider" />
+      <ResponsiveViewComponent
+        breakpoints={breakpoints}
+        setItemHiddenBreakpoints={setItemHiddenBreakpoints}
+        itemHiddenBreakpoints={itemHiddenBreakpoints}
+      /> 
+      <hr className="dropdown-divider" />
       <form onSubmit={handleSubmit}>
         <div className="field">
           <label className="label">Texte du titre</label>
@@ -201,6 +218,21 @@ const ComponentTitleSettings: FC<ComponentTitleSettingsProps> = ({
           </button>
         </div>
       </form>
+      <hr className="dropdown-divider" />
+          
+					<button
+						type="button"
+						className="dropdown-item"
+						onClick={(e) => {
+							e.preventDefault();
+							setCurrentMenu("MenuGlobal"); // Retourne au menu global sans fermer le dropdown
+						}}
+					>
+						<span className="icon">
+							<i className="fas fa-arrow-left" />
+						</span>
+						<span>Retour au Menu Global</span>
+					</button>
     </div>
   );
 };

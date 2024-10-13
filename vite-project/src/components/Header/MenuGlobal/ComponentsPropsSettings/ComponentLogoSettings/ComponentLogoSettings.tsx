@@ -43,7 +43,6 @@ const ComponentLogoSettings: FC<ComponentLogoSettingsProps> = ({
         },
       },
     };
-    console.log(updatedItem);
     updateItemProps(updatedItem);
     // Retourner au menu précédent
     setCurrentMenu("MenuGlobal");
@@ -145,6 +144,7 @@ const ComponentLogoSettings: FC<ComponentLogoSettingsProps> = ({
           </button>
         </div>
         
+      </form>
           <hr className="dropdown-divider" />
           
 					<button
@@ -160,7 +160,6 @@ const ComponentLogoSettings: FC<ComponentLogoSettingsProps> = ({
 						</span>
 						<span>Retour au Menu Global</span>
 					</button>
-      </form>
     </div>
   );
 };
