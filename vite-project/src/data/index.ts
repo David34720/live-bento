@@ -93,7 +93,7 @@ export default {
 								borderSize: 0,
 							},
 						},
-						styles: {},
+						styles: {}, // Surcharges spécifiques au layout si nécessaire
 						hidden: ["xs", "xxs"],
 					},
 					{
@@ -124,8 +124,8 @@ export default {
 						componentProps: {
 							items: ["Accueil", "Produits", "Contact"],
 							styles: {
-								bgColor: "rgba(255, 0, 0, 0)",
-								borderColor: "rgba(255, 255, 255, 0)",
+								bgColor: "rgba(255, 0, 0, 0)", // Transparence
+								borderColor: "rgba(255, 255, 255, 0)", // Transparence
 								borderSize: 0,
 							},
 						},
@@ -150,8 +150,8 @@ export default {
 								borderSize: 0,
 							},
 						},
-						styles: {},
-						hidden: [],
+						styles: {}, // Surcharges spécifiques au layout si nécessaire
+						hidden: ["xs", "xxs"],
 					},
 					{
 						i: "header1",
@@ -181,8 +181,8 @@ export default {
 						componentProps: {
 							items: ["Accueil", "Produits", "Contact"],
 							styles: {
-								bgColor: "rgba(255, 0, 0, 0)",
-								borderColor: "rgba(255, 255, 255, 0)",
+								bgColor: "rgba(255, 0, 0, 0)", // Transparence
+								borderColor: "rgba(255, 255, 255, 0)", // Transparence
 								borderSize: 0,
 							},
 						},
@@ -199,7 +199,7 @@ export default {
 						h: 2,
 						component: "logo",
 						componentProps: {
-							imgUrl: "logo1.png",
+							imgUrl: "logo.png",
 							altText: "Logo de Shop 1",
 							styles: {
 								bgColor: "#ff0000",
@@ -207,8 +207,8 @@ export default {
 								borderSize: 0,
 							},
 						},
-						styles: {},
-						hidden: [],
+						styles: {}, // Surcharges spécifiques au layout si nécessaire
+						hidden: ["xs", "xxs"],
 					},
 					{
 						i: "header1",
@@ -238,8 +238,47 @@ export default {
 						componentProps: {
 							items: ["Accueil", "Produits", "Contact"],
 							styles: {
-								bgColor: "rgba(255, 0, 0, 0)",
-								borderColor: "rgba(255, 255, 255, 0)",
+								bgColor: "rgba(255, 0, 0, 0)", // Transparence
+								borderColor: "rgba(255, 255, 255, 0)", // Transparence
+								borderSize: 0,
+							},
+						},
+						styles: {},
+						hidden: [],
+					},
+				],
+				xxs: [
+					{
+						i: "logo1",
+						x: 0,
+						y: 0,
+						w: 4,
+						h: 2,
+						component: "logo",
+						componentProps: {
+							imgUrl: "logo.png",
+							altText: "Logo de Shop 1",
+							styles: {
+								bgColor: "#ff0000",
+								borderColor: "#ff0000",
+								borderSize: 0,
+							},
+						},
+						styles: {}, // Surcharges spécifiques au layout si nécessaire
+						hidden: ["xs", "xxs"],
+					},
+					{
+						i: "header1",
+						x: 4,
+						y: 0,
+						w: 4,
+						h: 2,
+						component: "title",
+						componentProps: {
+							text: "Bienvenue dans Shop 1",
+							styles: {
+								bgColor: "#ff0000",
+								borderColor: "#ff0000",
 								borderSize: 0,
 							},
 						},
@@ -247,34 +286,17 @@ export default {
 						hidden: [],
 					},
 					{
-						i: "header2",
-						x: 0,
-						y: 2,
-						w: 4,
-						h: 2,
-						component: "title",
-						componentProps: {
-							text: "Section Additionnelle",
-							styles: {
-								fontSize: "20px",
-								color: "#333333",
-							},
-						},
-						styles: {},
-						hidden: [],
-					},
-					{
-						i: "nav2",
-						x: 0,
-						y: 4,
+						i: "nav1",
+						x: 8,
+						y: 0,
 						w: 4,
 						h: 2,
 						component: "navigation",
 						componentProps: {
-							items: ["FAQ", "Support"],
+							items: ["Accueil", "Produits", "Contact"],
 							styles: {
-								bgColor: "rgba(255, 0, 0, 0)",
-								borderColor: "rgba(255, 255, 255, 0)",
+								bgColor: "rgba(255, 0, 0, 0)", // Transparence
+								borderColor: "rgba(255, 255, 255, 0)", // Transparence
 								borderSize: 0,
 							},
 						},

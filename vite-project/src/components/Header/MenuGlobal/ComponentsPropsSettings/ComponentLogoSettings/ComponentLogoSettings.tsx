@@ -1,29 +1,36 @@
 // ComponentLogoSettings.tsx
-import React, { useState, useEffect, FC } from "react";
-import { LayoutItem } from "../../../@types";
+import React, { useState, FC } from "react";
+import { Breakpoints, LayoutItem } from '../../../../../@types/index';
+import ResponsiveViewComponent from "../../../../GridComponents/ResponsiveViewComponent/ResponsiveViewComponent";
+
+type LogoLayoutItem = Extract<LayoutItem, { component: "logo" }>;
 
 interface ComponentLogoSettingsProps {
-  item: LayoutItem;
+  item: LogoLayoutItem;
   updateItemProps: (updatedItem: LayoutItem) => void;
   setCurrentMenu: (menu: string) => void;
+  breakpoints: Breakpoints;
 }
 
 const ComponentLogoSettings: FC<ComponentLogoSettingsProps> = ({
   item,
   updateItemProps,
   setCurrentMenu,
+  breakpoints,
 }) => {
   const [imgUrl, setImgUrl] = useState<string>(item.componentProps?.imgUrl || "");
   const [altText, setAltText] = useState<string>(item.componentProps?.altText || "");
   const [bgColor, setBgColor] = useState<string>(item.componentProps?.styles?.bgColor || "");
   const [borderColor, setBorderColor] = useState<string>(item.componentProps?.styles?.borderColor || "");
   const [borderSize, setBorderSize] = useState<number>(item.componentProps?.styles?.borderSize || 0);
+  const [itemHiddenBreakpoints, setItemHiddenBreakpoints] = useState<string[]>(item.hidden || []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Mettre à jour les componentProps de l'élément
-    const updatedItem: LayoutItem = {
+    const updatedItem: LogoLayoutItem = {
       ...item,
+      hidden: itemHiddenBreakpoints,
       componentProps: {
         ...item.componentProps,
         imgUrl,
@@ -36,6 +43,7 @@ const ComponentLogoSettings: FC<ComponentLogoSettingsProps> = ({
         },
       },
     };
+    console.log(updatedItem);
     updateItemProps(updatedItem);
     // Retourner au menu précédent
     setCurrentMenu("MenuGlobal");
@@ -43,6 +51,14 @@ const ComponentLogoSettings: FC<ComponentLogoSettingsProps> = ({
 
   return (
     <div className="component-logo-settings">
+      <span className="subtitle">Configuration de "Logo"</span>
+      <hr className="dropdown-divider" />
+      <ResponsiveViewComponent
+        breakpoints={breakpoints}
+        setItemHiddenBreakpoints={setItemHiddenBreakpoints}
+        itemHiddenBreakpoints={itemHiddenBreakpoints}
+      /> 
+      <hr className="dropdown-divider" />
       <form onSubmit={handleSubmit}>
         <div className="field">
           <label className="label">URL de l'image</label>
@@ -116,7 +132,7 @@ const ComponentLogoSettings: FC<ComponentLogoSettingsProps> = ({
           </div>
         </div>
 
-        <div className="buttons">
+        <div className="buttons nav-element">
           <button type="submit" className="button is-primary">
             Enregistrer
           </button>
@@ -128,6 +144,22 @@ const ComponentLogoSettings: FC<ComponentLogoSettingsProps> = ({
             Annuler
           </button>
         </div>
+        
+          <hr className="dropdown-divider" />
+          
+					<button
+						type="button"
+						className="dropdown-item"
+						onClick={(e) => {
+							e.preventDefault();
+							setCurrentMenu("MenuGlobal"); // Retourne au menu global sans fermer le dropdown
+						}}
+					>
+						<span className="icon">
+							<i className="fas fa-arrow-left" />
+						</span>
+						<span>Retour au Menu Global</span>
+					</button>
       </form>
     </div>
   );

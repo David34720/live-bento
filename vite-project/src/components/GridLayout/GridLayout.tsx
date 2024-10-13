@@ -147,33 +147,36 @@ const GridLayout: FC<GridLayoutProps> = React.memo(
 				//*
 			>
 				{/* Parcourir les éléments du layout pour le breakpoint actuel */}
-				{layouts[currentBreakpoint]?.map((item) => (
-					<div
-						key={item.i}
-						className={`box  ${isAdmin ? "layout-item__admin" : "layout-item"}`}
-					>
-						{isAdmin && (
-							<div className="drag-handle">
-								<i className="fas fa-grip-vertical" />
-							</div>
-						)}
-						{isAdmin && (
-							// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-							<i
-								className="edit-button fas fa-pen fa-2x"
-								onClick={() => handleEditItem(item as LayoutItem)}
-							/>
-						)}
-						{chooseComponentToDisplay(item as LayoutItem, currentShop, currentBreakpoint)}
-						{isAdmin && (
-							// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-							<i
-								className="delete-button fas fa-times-circle"
-								onClick={() => removeItem(item.i)}
-							/>
-						)}
-					</div>
-				))}
+				{layouts[currentBreakpoint]?.map((item) => {
+					if ((item as LayoutItem).hidden?.includes(currentBreakpoint)) return null;
+					return (
+						<div
+							key={item.i}
+							className={`box  ${isAdmin ? "layout-item__admin" : "layout-item"}`}
+						>
+							{isAdmin && (
+								<div className="drag-handle">
+									<i className="fas fa-grip-vertical" />
+								</div>
+							)}
+							{isAdmin && (
+								// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+								<i
+									className="edit-button fas fa-pen fa-2x"
+									onClick={() => handleEditItem(item as LayoutItem)}
+								/>
+							)}
+							{chooseComponentToDisplay(item as LayoutItem, currentShop, currentBreakpoint)}
+							{isAdmin && (
+								// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+								<i
+									className="delete-button fas fa-times-circle"
+									onClick={() => removeItem(item.i)}
+								/>
+							)}
+						</div>
+					);
+				})}
 			</ResponsiveGridLayout>
 		);
 	},

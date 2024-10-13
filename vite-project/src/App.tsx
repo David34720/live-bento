@@ -93,7 +93,8 @@ function App() {
 				if (userShops.length > 0) {
 					const firstShop = userShops[0] as Shop;
 					setCurrentShop(firstShop);
-					setLayouts(firstShop.layouts);
+					console.log('first shop', firstShop)
+					setLayouts(ensureLayouts(firstShop.layouts));
 					setCounter(Object.keys(firstShop.layouts).length - 1);
 					setBackgroundSettings(firstShop.BackgroundSettings || {
 						imageUrl: "",
@@ -108,6 +109,25 @@ function App() {
 		}
 		initData();
 	}, []);
+
+	// Function pour filtrer les Layouts avec les Hidden retirer
+const filteredLayouts = useMemo(() => {
+    if (!layouts || !currentBreakpoint) return null;
+
+    const layoutForBreakpoint = layouts[currentBreakpoint] || [];
+
+    // Filtrer les éléments qui ne doivent pas être affichés pour ce breakpoint
+    const filteredLayout = layoutForBreakpoint.filter(
+      (item) => !(item as LayoutItem).hidden?.includes(currentBreakpoint)
+    );
+		console.log('filtered layout', filteredLayout)
+    return {
+      ...layouts,
+      [currentBreakpoint]: filteredLayout,
+    };
+  }, [layouts, currentBreakpoint]);
+
+	
 // Fonction pour ajouter un nouvel élément à la grille
 const addItem = useCallback((componentType: ComponentType) => {
   const newItemId = counter.toString();
@@ -186,7 +206,7 @@ const updateItemProps = useCallback(
           item.i === updatedItem.i ? updatedItem : item
         );
       }
-
+			console.log("Build New Layouts", newLayouts);
       return newLayouts;
     });
   },
@@ -214,38 +234,51 @@ const updateItemProps = useCallback(
 		});
 	}, []);
 	// Fonction appelée lorsque le layout change
-	const onLayoutChange = useCallback(
-		(layout: Layout[], allLayouts: Layouts) => {
-			if (!layouts) return;
+const onLayoutChange = useCallback(
+  (layout: Layout[], allLayouts: Layouts) => {
+    if (!layouts) return;
 
-			// Créer un nouvel objet de dispositions en copiant les dispositions existantes
-			const newLayouts: LayoutsShop = { ...layouts };
+    // Créer un nouvel objet de dispositions en copiant les dispositions existantes
+    const newLayouts: LayoutsShop = { ...layouts };
 
-			// Déterminer le breakpoint actuel
-			const breakpoint = currentBreakpoint;
+    // Déterminer le breakpoint actuel
+    const breakpoint = currentBreakpoint;
 
-			// Mettre à jour la disposition pour le breakpoint actuel
-			newLayouts[breakpoint] = newLayouts[breakpoint].map((item) => {
-				// Trouver l'élément de disposition mis à jour
-				const updatedItem = layout.find((l) => l.i === item.i);
-				if (updatedItem) {
-					// Retourner un nouvel élément avec la position et la taille mises à jour, en préservant les propriétés personnalisées
-					return {
-						...item,
-						x: updatedItem.x,
-						y: updatedItem.y,
-						w: updatedItem.w,
-						h: updatedItem.h,
-					};
-				} else {
-					return item;
-				}
-			});
+    // Obtenir les items pour le breakpoint actuel
+    const currentItems = newLayouts[breakpoint];
 
-			setLayouts(newLayouts);
-		},
-		[layouts, currentBreakpoint],
-	);
+    // Séparer les éléments visibles et cachés
+    const visibleItems = currentItems.filter(
+      (item) => !(item as LayoutItem).hidden?.includes(currentBreakpoint)
+    );
+    const hiddenItems = currentItems.filter((item) =>
+      (item as LayoutItem).hidden?.includes(currentBreakpoint)
+    );
+
+    // Mettre à jour les positions des éléments visibles
+    const updatedVisibleItems = visibleItems.map((item) => {
+      const updatedItem = layout.find((l) => l.i === item.i);
+      if (updatedItem) {
+        return {
+          ...item,
+          x: updatedItem.x,
+          y: updatedItem.y,
+          w: updatedItem.w,
+          h: updatedItem.h,
+        };
+      } else {
+        return item;
+      }
+    });
+
+    // Combiner les éléments mis à jour avec les éléments cachés
+    newLayouts[breakpoint] = [...updatedVisibleItems, ...hiddenItems];
+
+    setLayouts(newLayouts);
+  },
+  [layouts, currentBreakpoint],
+);
+
 
 const capitalizeFirstLetter = (string: string) => {
 			return string.charAt(0).toUpperCase() + string.slice(1);
@@ -289,7 +322,8 @@ const capitalizeFirstLetter = (string: string) => {
           switch (selectedItem.component) {
             case "logo":
               return (
-                <ComponentLogoSettings
+								<ComponentLogoSettings
+									breakpoints={breakpoints}
                   item={selectedItem}
                   updateItemProps={updateItemProps}
                   setCurrentMenu={setCurrentMenu}
@@ -411,7 +445,7 @@ const capitalizeFirstLetter = (string: string) => {
 				{/* Ajoute une condition de rendu pour vérifier currentShop et currentBreakpoint */}
 				{currentShop && currentBreakpoint && layouts && (
 					<GridLayout
-						layouts={layouts}
+						layouts={ensureLayouts(filteredLayouts as LayoutsShop ?? {})}
 						onLayoutChange={onLayoutChange}
 						breakpoints={breakpoints}
 						cols={{ lg: 12, md: 12, sm: 12, xs: 6, xxs: 4 }}

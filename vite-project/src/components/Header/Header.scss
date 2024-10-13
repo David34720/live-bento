@@ -23,6 +23,7 @@ button.dropdown-item   {
 
 .nav-element input {
  width: 100px;
+ vertical-align: middle;
 }
 .nav-element input[type="color"] {
   width: 30px;  
@@ -41,6 +42,8 @@ button.dropdown-item {
 
 .dropdown-menu {
   opacity: 0.92;
+  max-height: 90dvh;
+  overflow-y: auto;
 }
 .rotate-90 {
     transform: rotate(270deg);  /* Rotation de 90 degrés pour le mode paysage */
