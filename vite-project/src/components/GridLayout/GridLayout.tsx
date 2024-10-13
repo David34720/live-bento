@@ -6,7 +6,8 @@ import "react-grid-layout/css/styles.css"; // Styles par défaut de react-grid-l
 import "react-resizable/css/styles.css"; // Styles pour le redimensionnement
 import "bulma/css/bulma.min.css"; // Styles de Bulma
 import "./GridLayout.scss"; // Styles personnalisés
-import GridItemLogo from "../gridComponents/gridItemLogo/gridItemLogo";
+import GridItemLogo from "../GridComponents/GridItemLogo/GridItemLogo";
+import GridItemTitle from "../GridComponents/GridItemTitle/GridItemTitle";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 interface GridLayoutProps {
@@ -47,27 +48,32 @@ const GridLayout: FC<GridLayoutProps> = React.memo(
 		isAdmin,
 	}) => {
 		const chooseComponentToDisplay = useCallback(
-			(item: LayoutItem, currentShop: Shop, currentBreakpoint: string) => {
-				switch (item.component) {
-					case "logo":
-						return (
-							<GridItemLogo
-								item={item}
-								currentShop={currentShop}
-								currentBreakpoint={currentBreakpoint}
-							/>
-						);
-					case "title":
-						return <div>Ceci est un en-tête</div>;
-					case "footer":
-						return <div>Ceci est un pied de page</div>;
-					default:
-						return <div></div>;
-				}
-			},
-			[currentShop, currentBreakpoint],
-		);
-
+		(item: LayoutItem, currentShop: Shop, currentBreakpoint: string) => {
+			switch (item.component) {
+				case "logo":
+					return (
+						<GridItemLogo
+							item={item}
+							currentShop={currentShop}
+							currentBreakpoint={currentBreakpoint}
+						/>
+					);
+				case "title":
+					return (
+						<GridItemTitle
+							item={item}
+							currentShop={currentShop}
+							currentBreakpoint={currentBreakpoint}
+						/>
+					);
+				// Ajouter des cas pour les autres types de composants...
+				default:
+					return <div></div>;
+			}
+		},
+		[currentShop, currentBreakpoint]
+	);
+// todo: ajouter un bouton pour ajouter un nouvel item
 		const handleEditItem = (component: string) => {
 			if (isAdmin) {
 				removeItem(component);
@@ -89,7 +95,8 @@ const GridLayout: FC<GridLayoutProps> = React.memo(
 				style={style}
 				isDraggable={isAdmin} // Active le déplacement seulement pour les admins
 				isResizable={isAdmin}
-				// quelques parametres utiles de la documentation de ResponsiveGridLayout
+
+				// * quelques parametres utiles de la documentation de ResponsiveGridLayout
 				// draggableCancel: string = '' : Sélecteur CSS pour les éléments qui ne doivent pas être déplaçables.  draggableCancel: '.non-draggable' empêchera le glissement sur les éléments avec la classe .non-draggable
 				//compactType: 'vertical' | 'horizontal' | null = 'vertical' : vertical compactera les éléments vers le haut, horizontal vers la gauche, et null désactivera le compactage
 				//margin: [number, number] = [10, 10] :  Définit la marge entre les éléments de la grille sous la forme [horizontal, vertical] en pixels.
@@ -118,8 +125,8 @@ const GridLayout: FC<GridLayoutProps> = React.memo(
 				// Description : Rappel appelé lorsqu'un élément est en cours de glissement au-dessus de la grille depuis l'extérieur. Retournez un objet pour changer dynamiquement la taille de droppingItem ou false pour ignorer le glissement.
 				// innerRef: { current: null | HTMLDivElement }
 
-				// Description : Référence pour obtenir une référence au div englobant de la grille.
-				//
+				// *Description : Référence pour obtenir une référence au div englobant de la grille.
+				//*
 			>
 				{/* Parcourir les éléments du layout pour le breakpoint actuel */}
 				{layouts[currentBreakpoint]?.map((item) => (

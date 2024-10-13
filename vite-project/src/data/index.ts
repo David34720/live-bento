@@ -28,7 +28,7 @@ export default {
 						h: 2,
 						component: "logo",
 						componentProps: {
-							imgUrl: "logo1.png",
+							imgUrl: "logo.png",
 							altText: "Logo de Shop 1",
 							styles: {
 								bgColor: "#ff0000",
@@ -85,7 +85,7 @@ export default {
 						h: 2,
 						component: "logo",
 						componentProps: {
-							imgUrl: "logo1.png",
+							imgUrl: "logo.png",
 							altText: "Logo de Shop 1",
 							styles: {
 								bgColor: "#ff0000",
@@ -142,7 +142,7 @@ export default {
 						h: 2,
 						component: "logo",
 						componentProps: {
-							imgUrl: "logo1.png",
+							imgUrl: "logo.png",
 							altText: "Logo de Shop 1",
 							styles: {
 								bgColor: "#ff0000",

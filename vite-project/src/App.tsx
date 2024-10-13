@@ -99,45 +99,70 @@ function App() {
 		initData();
 	}, []);
 // Fonction pour ajouter un nouvel élément à la grille
-const addItem = useCallback(() => {
-    const newItemId = counter.toString(); // Nouvel identifiant basé sur le compteur
+const addItem = useCallback((componentType: ComponentType) => {
+  const newItemId = counter.toString();
 
-    setLayouts((prevLayouts: LayoutsShop | undefined) => {
-        // Copier les layouts existants tout en initialisant les breakpoints manquants à []
-        const newLayouts: LayoutsShop = {
-            lg: prevLayouts?.lg ?? [], // Si lg est undefined, initialiser à []
-            md: prevLayouts?.md ?? [], // Si md est undefined, initialiser à []
-            sm: prevLayouts?.sm ?? [],
-            xs: prevLayouts?.xs ?? [],
-            xxs: prevLayouts?.xxs ?? []
-        };
+  setLayouts((prevLayouts: LayoutsShop | undefined) => {
+    const newLayouts: LayoutsShop = {
+      lg: prevLayouts?.lg ?? [],
+      md: prevLayouts?.md ?? [],
+      sm: prevLayouts?.sm ?? [],
+      xs: prevLayouts?.xs ?? [],
+      xxs: prevLayouts?.xxs ?? [],
+    };
 
-        // Boucle à travers chaque breakpoint
-        for (const key of Object.keys(newLayouts)) {
-            // Récupérer le layout pour chaque breakpoint
-            const breakpointLayouts = newLayouts[key as keyof LayoutsShop];
+    for (const key of Object.keys(newLayouts)) {
+      const breakpointLayouts = newLayouts[key as keyof LayoutsShop];
 
-            // Créer le nouvel élément à ajouter à la grille
-            const newItem: LayoutItem = {
-                i: newItemId, // Identifiant unique de l'élément
-                x: 0, // Position X initiale
-                y: Number.POSITIVE_INFINITY, // Position Y initiale
-                w: breakpointLayouts[0]?.w || 4, // Largeur (par défaut ou celle du premier élément)
-                h: breakpointLayouts[0]?.h || 2, // Hauteur (par défaut ou celle du premier élément)
-                component: "logo", // Ajouter un type de composant par défaut (à personnaliser selon ton besoin)
-            };
+      // Initialiser componentProps en fonction de componentType
+      let componentProps: any = {};
+      switch (componentType) {
+        case "logo":
+          componentProps = {
+            imgUrl: "logo.png",
+            altText: "Logo par défaut",
+            styles: {
+              bgColor: "#ffffff",
+              borderColor: "#000000",
+              borderSize: 1,
+            },
+          };
+          break;
+        case "title":
+          componentProps = {
+            text: "Titre par défaut",
+            styles: {
+              fontSize: "16px",
+              color: "#000000",
+            },
+          };
+          break;
+        // Ajouter des cas pour les autres types de composants...
+        default:
+          break;
+      }
 
-            // Ajouter le nouvel élément à la disposition du breakpoint actuel
-            newLayouts[key as keyof LayoutsShop] = [...breakpointLayouts, newItem];
-        }
+      const newItem: LayoutItem = {
+        i: newItemId,
+        x: 0,
+        y: Number.POSITIVE_INFINITY,
+        w: breakpointLayouts[0]?.w || 4,
+        h: breakpointLayouts[0]?.h || 2,
+        component: componentType,
+        componentProps: componentProps,
+        styles: {},
+        hidden: [],
+      };
 
-        // Retourner les nouveaux layouts mis à jour
-        return newLayouts;
-    });
+      newLayouts[key as keyof LayoutsShop] = [...breakpointLayouts, newItem];
+    }
+		console.log(newLayouts);
+    return newLayouts;
+  });
 
-    // Incrémenter le compteur pour garantir un identifiant unique à chaque nouvel élément
-    setCounter((prevCounter) => prevCounter + 1);
+  setCounter((prevCounter) => prevCounter + 1);
 }, [counter]);
+
 
 
 
@@ -161,11 +186,38 @@ const addItem = useCallback(() => {
 	}, []);
 	// Fonction appelée lorsque le layout change
 	const onLayoutChange = useCallback(
-		(layout: ReactGridLayout.Layout[], allLayouts: LayoutsShop) => {
-			setLayouts(allLayouts); // Mettre à jour les layouts avec les nouvelles dispositions
+		(layout: Layout[], allLayouts: Layouts) => {
+			if (!layouts) return;
+
+			// Créer un nouvel objet de dispositions en copiant les dispositions existantes
+			const newLayouts: LayoutsShop = { ...layouts };
+
+			// Déterminer le breakpoint actuel
+			const breakpoint = currentBreakpoint;
+
+			// Mettre à jour la disposition pour le breakpoint actuel
+			newLayouts[breakpoint] = newLayouts[breakpoint].map((item) => {
+				// Trouver l'élément de disposition mis à jour
+				const updatedItem = layout.find((l) => l.i === item.i);
+				if (updatedItem) {
+					// Retourner un nouvel élément avec la position et la taille mises à jour, en préservant les propriétés personnalisées
+					return {
+						...item,
+						x: updatedItem.x,
+						y: updatedItem.y,
+						w: updatedItem.w,
+						h: updatedItem.h,
+					};
+				} else {
+					return item;
+				}
+			});
+
+			setLayouts(newLayouts);
 		},
-		[],
+		[layouts, currentBreakpoint],
 	);
+
 
 	// Choisir quel menu afficher
 	const renderMenuContent = useCallback(() => {

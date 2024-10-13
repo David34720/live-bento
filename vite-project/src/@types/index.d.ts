@@ -149,7 +149,8 @@ export interface ItemNavigationProps {
   styles?: LayoutStyles; // Styles par défaut du composant
 }
 
-export interface ItemFooterProps {
+
+333,,,export interface ItemFooterProps {
   text?: string;
   link?: string;
   styles?: LayoutStyles; // Styles par défaut du composant
@@ -165,7 +166,7 @@ export interface ItemBannerProps {
 export type ComponentType = 'logo' | 'title' | 'navigation' | 'footer' | 'banner';
 
 
-// TODO // A string corresponding to the component key
+// * // A string corresponding to the component key
 //   i: string,
 
 //   // These are all in grid units, not pixels
